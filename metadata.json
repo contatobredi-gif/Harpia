@@ -1,0 +1,6 @@
+{
+  "name": "HARPIA TECH - Inteligência B2G para Educação",
+  "description": "Plataforma SaaS de inteligência B2G para prospecção de oportunidades educacionais em municípios brasileiros.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
