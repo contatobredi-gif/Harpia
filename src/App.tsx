@@ -150,7 +150,7 @@ export default function App() {
         {refreshToast && (
           <div className="fixed top-20 right-6 z-40 p-3 rounded-xl bg-[#0A1329] border border-[#00DDF2]/50 text-xs text-[#00DDF2] shadow-xl flex items-center gap-2 animate-in fade-in">
             <span className="w-2 h-2 rounded-full bg-[#00DDF2] animate-pulse" />
-            <span>Dados de inteligência atualizados com as bases oficiais.</span>
+            <span>Dados demonstrativos atualizados com sucesso.</span>
           </div>
         )}
 

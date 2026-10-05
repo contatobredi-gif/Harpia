@@ -5,10 +5,10 @@ import {
   ExternalLink,
   ShieldCheck,
   Search,
-  RefreshCw,
   Landmark,
   GraduationCap,
   ShoppingBag,
+  Info,
 } from 'lucide-react';
 import { PUBLIC_DATA_SOURCES } from '../data/mockData';
 import { PublicDataSource } from '../types';
@@ -34,19 +34,27 @@ export const SourcesView: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-            Central de Fontes Oficiais
+            Central de Fontes de Referência
           </h1>
           <p className="text-xs text-slate-400 mt-1 max-w-2xl leading-relaxed">
-            Repositório e status de conectividade das bases públicas abertas que alimentam o motor de inteligência da Harpia Tech.
+            Mapeamento das bases públicas oficiais previstas na metodologia da plataforma para cálculo de indicadores fiscais, educacionais e contratuais.
           </p>
         </div>
 
         <div className="flex items-center gap-2 self-start sm:self-center">
-          <span className="px-3 py-1.5 rounded-lg bg-[#0A1329] border border-[#16264C] text-[11px] text-slate-300 flex items-center gap-1.5 font-mono">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            100% dos conectores em conformidade
+          <span className="px-3 py-1.5 rounded-lg bg-[#0A1329] border border-amber-500/30 text-[11px] text-amber-300 flex items-center gap-1.5 font-mono">
+            <span className="w-2 h-2 rounded-full bg-amber-400" />
+            AMBIENTE DEMONSTRATIVO • DADOS SIMULADOS
           </span>
         </div>
+      </div>
+
+      {/* Methodological notice */}
+      <div className="p-3.5 rounded-xl bg-[#0A1329] border border-[#16264C] flex items-center gap-3 text-xs text-slate-300">
+        <Info className="w-4 h-4 text-[#00DDF2] shrink-0" />
+        <span>
+          <strong>Nota Metodológica:</strong> As fontes listadas abaixo correspondem às bases oficiais que norteiam a modelagem de dados da Harpia Tech. Neste ambiente demonstrativo, todos os dados exibidos são simulados para apresentação dos fluxos analíticos.
+        </span>
       </div>
 
       {/* Filter Tabs & Search */}
@@ -75,7 +83,7 @@ export const SourcesView: React.FC = () => {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Filtrar base de dados..."
+            placeholder="Filtrar base de referência..."
             className="w-full pl-8 pr-3 py-1.5 rounded-lg bg-[#050B1E] border border-[#16264C] text-xs text-white placeholder-slate-400 focus:outline-none focus:border-[#00DDF2]/50"
           />
         </div>
@@ -110,9 +118,8 @@ export const SourcesView: React.FC = () => {
                     </div>
                   </div>
 
-                  <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shrink-0 flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                    {source.status}
+                  <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#00DDF2]/10 text-[#00DDF2] border border-[#00DDF2]/20 shrink-0">
+                    Fonte Prevista
                   </span>
                 </div>
 
@@ -124,16 +131,16 @@ export const SourcesView: React.FC = () => {
               {/* Metadata Indicators */}
               <div className="pt-3 border-t border-[#16264C]/60 grid grid-cols-2 gap-2 text-[11px] text-slate-400">
                 <div>
-                  <span className="block text-slate-400 text-[10px]">Última sincronização:</span>
+                  <span className="block text-slate-400 text-[10px]">Padrão de referência:</span>
                   <strong className="text-slate-200">{source.ultimaAtualizacao}</strong>
                 </div>
                 <div>
-                  <span className="block text-slate-400 text-[10px]">Confiabilidade:</span>
+                  <span className="block text-slate-400 text-[10px]">Grau de autoridade:</span>
                   <strong className="text-emerald-400">{source.confiabilidade}</strong>
                 </div>
                 <div className="col-span-2 pt-1 flex items-center justify-between">
                   <div>
-                    <span className="text-slate-400 text-[10px] block">Cobertura:</span>
+                    <span className="text-slate-400 text-[10px] block">Escopo planejado:</span>
                     <span className="text-slate-300">{source.cobertura}</span>
                   </div>
                   <span className="font-mono text-[10px] text-slate-400 flex items-center gap-1">

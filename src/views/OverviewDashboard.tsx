@@ -135,10 +135,10 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
           </div>
         </div>
 
-        {/* Card 6: Fontes monitoradas */}
+        {/* Card 6: Fontes de referência */}
         <div className="p-4 rounded-xl bg-[#0A1329] border border-[#16264C] flex flex-col justify-between">
           <div className="flex items-center justify-between text-xs text-slate-400">
-            <span className="truncate">Fontes monitoradas</span>
+            <span className="truncate">Fontes de referência</span>
             <Database className="w-4 h-4 text-[#00DDF2] shrink-0" />
           </div>
           <div className="my-2">
@@ -146,9 +146,9 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
               8
             </span>
           </div>
-          <div className="flex items-center gap-1 text-[11px] text-emerald-400">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-            <span>100% operacionais</span>
+          <div className="flex items-center gap-1 text-[11px] text-[#00DDF2]">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#00DDF2]" />
+            <span>Bases modeladas</span>
           </div>
         </div>
       </div>
@@ -205,9 +205,9 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
           <div className="p-3 rounded-lg bg-[#050B1E] border border-[#16264C] flex items-center justify-between text-xs text-slate-400">
             <span className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-emerald-400" />
-              Sinal forte: Expirações contratuais concentradas no 4º trimestre e início do ano letivo.
+              Sinal simulado: Expirações contratuais concentradas no 4º trimestre e início do ano letivo.
             </span>
-            <span className="font-mono-numbers text-slate-300">Base Siconfi / PNCP</span>
+            <span className="font-mono-numbers text-slate-300">Padrão de referência: Siconfi / PNCP</span>
           </div>
         </div>
 

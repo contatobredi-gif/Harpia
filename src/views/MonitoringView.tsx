@@ -37,10 +37,10 @@ export const MonitoringView: React.FC<MonitoringViewProps> = ({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-            Monitoramento Contínuo & Watchlist
+            Monitoramento & Watchlist
           </h1>
           <p className="text-xs text-slate-400 mt-1 max-w-2xl leading-relaxed">
-            Acompanhe a evolução de scores, mudanças no ciclo orçamentário e alertas de novos atos públicos nos municípios sob vigilância comercial.
+            Acompanhe a evolução simulada de scores, variações de janelas e alertas metodológicos nos municípios sob observação comercial.
           </p>
         </div>
 
@@ -168,9 +168,9 @@ export const MonitoringView: React.FC<MonitoringViewProps> = ({
                 Linha do Tempo de Sinais B2G
               </h2>
             </div>
-            <span className="text-[10px] text-emerald-400 font-mono flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              Live
+            <span className="text-[10px] text-[#00DDF2] font-mono flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#00DDF2]" />
+              Simulado
             </span>
           </div>
 

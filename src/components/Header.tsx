@@ -1,5 +1,5 @@
-import React from 'react';
-import { Search, Bell, Sparkles, RefreshCw } from 'lucide-react';
+import React, { useState } from 'react';
+import { Search, Bell, Sparkles, RefreshCw, Info } from 'lucide-react';
 import { NavTab } from './Sidebar';
 
 interface HeaderProps {
@@ -18,7 +18,7 @@ const TAB_TITLES: Record<NavTab, { section: string; title: string }> = {
   'oportunidades': { section: 'Funil Comercial', title: 'Pipeline de Oportunidades' },
   'monitoramento': { section: 'Watchlist & Alertas', title: 'Monitoramento Contínuo' },
   'insights': { section: 'Copiloto de Decisão', title: 'Harpia Insights' },
-  'fontes': { section: 'Bases Públicas Oficiais', title: 'Central de Fontes' },
+  'fontes': { section: 'Bases de Referência Previstas', title: 'Central de Fontes' },
   'configuracoes': { section: 'Sistema', title: 'Configurações & Parâmetros' },
 };
 
@@ -30,19 +30,42 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenInsights,
   onRefreshData,
 }) => {
+  const [showDemoTooltip, setShowDemoTooltip] = useState(false);
   const meta = TAB_TITLES[currentTab] || { section: 'Plataforma', title: 'Harpia Tech' };
 
   return (
-    <header className="h-16 bg-[#050B1E]/90 backdrop-blur-md border-b border-[#16264C] sticky top-0 z-20 px-6 flex items-center justify-between gap-4">
-      {/* Zone 1: Contextual Breadcrumb */}
-      <div className="flex items-center gap-2 text-xs">
-        <span className="text-slate-400 font-medium">{meta.section}</span>
-        <span className="text-slate-500">/</span>
-        <h1 className="text-sm font-semibold text-white tracking-wide">{meta.title}</h1>
+    <header className="h-16 bg-[#050B1E]/95 backdrop-blur-md border-b border-[#16264C] sticky top-0 z-20 px-4 sm:px-6 flex items-center justify-between gap-3 sm:gap-4">
+      {/* Zone 1: Contextual Breadcrumb & Global Demo Badge */}
+      <div className="flex items-center gap-3 min-w-0">
+        <div className="flex items-center gap-1.5 sm:gap-2 text-xs truncate">
+          <span className="text-slate-400 font-medium hidden sm:inline">{meta.section}</span>
+          <span className="text-slate-500 hidden sm:inline">/</span>
+          <h1 className="text-sm font-semibold text-white tracking-wide truncate">{meta.title}</h1>
+        </div>
+
+        {/* Global Demo Environment Label */}
+        <div className="relative shrink-0">
+          <button
+            onMouseEnter={() => setShowDemoTooltip(true)}
+            onMouseLeave={() => setShowDemoTooltip(false)}
+            onClick={() => setShowDemoTooltip(!showDemoTooltip)}
+            className="flex items-center gap-1 px-2.5 py-1 rounded bg-amber-500/10 border border-amber-500/30 hover:border-amber-400/50 text-[10.5px] font-mono font-medium text-amber-300 transition-colors"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+            <span className="tracking-wider">AMBIENTE DEMONSTRATIVO • DADOS SIMULADOS</span>
+            <Info className="w-3 h-3 text-amber-300/70 ml-0.5" />
+          </button>
+
+          {showDemoTooltip && (
+            <div className="absolute left-0 top-8 z-50 w-72 p-2.5 rounded-lg bg-[#0A1329] border border-amber-500/40 text-[11px] text-slate-200 shadow-2xl leading-relaxed">
+              Este MVP utiliza dados simulados para demonstrar a experiência, os fluxos e a metodologia da plataforma.
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Zone 2: Global Search Bar and Demo Tag */}
-      <div className="flex-1 max-w-xl hidden md:flex items-center gap-3">
+      {/* Zone 2: Global Search Bar */}
+      <div className="flex-1 max-w-md hidden lg:flex items-center gap-3">
         <button
           onClick={onOpenSearch}
           className="w-full flex items-center justify-between px-3.5 py-1.5 rounded-lg bg-[#0A1329] border border-[#16264C] hover:border-[#00DDF2]/50 text-slate-400 hover:text-slate-200 transition-all text-xs text-left group"
@@ -55,19 +78,14 @@ export const Header: React.FC<HeaderProps> = ({
             ⌘K
           </kbd>
         </button>
-
-        <span className="text-[11px] font-medium text-slate-400 px-2 py-1 rounded bg-[#0A1329] border border-[#16264C]/70 whitespace-nowrap hidden lg:inline-flex items-center gap-1.5">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#00DDF2]" />
-          Ambiente de demonstração
-        </span>
       </div>
 
       {/* Zone 3: Actions & Notifications */}
-      <div className="flex items-center gap-2 sm:gap-3">
+      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
         {onRefreshData && (
           <button
             onClick={onRefreshData}
-            title="Atualizar dados de inteligência"
+            title="Atualizar dados demonstrativos"
             className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-[#0A1329] border border-transparent hover:border-[#16264C] transition-colors"
           >
             <RefreshCw className="w-4 h-4" />

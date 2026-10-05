@@ -113,8 +113,8 @@ export const NotificationsDrawer: React.FC<NotificationsDrawerProps> = ({
         </div>
 
         {/* Footer info */}
-        <div className="p-3 border-t border-[#16264C] bg-[#070F26] text-[11px] text-slate-400 text-center">
-          Monitoramento de Diários Oficiais e PNCP ativo 24/7.
+        <div className="p-3 border-t border-[#16264C] bg-[#070F26] text-[11px] text-slate-400 text-center font-mono">
+          Simulação de monitoramento e alertas conforme metodologia Harpia Tech.
         </div>
       </div>
     </div>

@@ -10,33 +10,44 @@ import {
   ShieldCheck,
   Building,
   RotateCcw,
+  Loader2,
+  AlertCircle,
 } from 'lucide-react';
 import { Municipality } from '../types';
+import { askHarpiaAi, InsightResponse } from '../services/ai';
 
 interface HarpiaInsightsViewProps {
   municipalities: Municipality[];
   onSelectMunicipality: (municipality: Municipality) => void;
 }
 
-interface InsightAnswer {
+interface InsightAnswer extends InsightResponse {
   query: string;
   prioridadeBadge: string;
   prioridadeColor: string;
-  conclusao: string;
-  justificativa: string;
-  sinais: string[];
-  cautelas: string[];
-  fontes: string[];
-  confianca: string;
-  targetMunicipalityId?: string;
 }
 
 const PRESET_QUESTIONS = [
-  'Por que o Município Alfa está entre as melhores oportunidades?',
-  'Quais oportunidades possuem janela nos próximos 90 dias?',
-  'Quais municípios combinam boa capacidade financeira e alta necessidade educacional?',
-  'Quais oportunidades possuem informações que precisam ser validadas?',
+  'Quais municípios possuem janela nos próximos 90 dias?',
+  'Compare Município Alfa e Município Beta.',
+  'Qual município possui maior capacidade fiscal?',
+  'Quais municípios combinam alta necessidade educacional e boa capacidade financeira?',
+  'Por que Município Alfa está com prioridade alta?',
+  'Quais oportunidades possuem mais cautelas?',
+  'Quais municípios estão em monitoramento?',
+  'Quais municípios possuem score acima de 75?',
 ];
+
+function getPriorityColor(priority: string): string {
+  const p = priority.toLowerCase();
+  if (p.includes('alta') || p.includes('iminente')) {
+    return 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30';
+  }
+  if (p.includes('atenção') || p.includes('cautela') || p.includes('alerta')) {
+    return 'bg-amber-500/15 text-amber-400 border border-amber-500/30';
+  }
+  return 'bg-[#00DDF2]/15 text-[#00DDF2] border border-[#00DDF2]/30';
+}
 
 export const HarpiaInsightsView: React.FC<HarpiaInsightsViewProps> = ({
   municipalities,
@@ -44,129 +55,34 @@ export const HarpiaInsightsView: React.FC<HarpiaInsightsViewProps> = ({
 }) => {
   const [inputText, setInputText] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [history, setHistory] = useState<InsightAnswer[]>([
-    {
-      query: 'Por que o Município Alfa está entre as melhores oportunidades?',
-      prioridadeBadge: 'PRIORIDADE ALTA',
-      prioridadeColor: 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30',
-      conclusao:
-        'O Município Alfa possui uma combinação favorável entre capacidade financeira, necessidade educacional e proximidade de janela de contratação.',
-      justificativa:
-        'Com Score Harpia 87/100, o município mantém aplicação educacional acima dos 27% da RCL, apresenta déficit de proficiência nos anos finais e possui contrato de apoio pedagógico expirando em menos de 75 dias.',
-      sinais: [
-        'Capacidade fiscal acima da média com superávit e baixa dívida',
-        'Alta aderência educacional e necessidade identificada pelo IDEB',
-        'Contrato semelhante próximo do encerramento (65 dias)',
-        'Canal institucional e equipe pedagógica mapeados e verificados',
-      ],
-      cautelas: [
-        'Saldo orçamentário específico em tecnologia requer validação prévia de rubrica na LOA',
-        'Vigência do contrato atual de gestão educacional precisa ser formalmente checada no Diário Oficial',
-      ],
-      fontes: ['Siconfi', 'PNCP', 'INEP Censo Escolar', 'TCE-PA', 'Diário Oficial Municipal'],
-      confianca: 'Alta (87%)',
-      targetMunicipalityId: 'mun-alfa',
-    },
-  ]);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [history, setHistory] = useState<InsightAnswer[]>([]);
 
-  const handleAskQuestion = (question: string) => {
-    if (!question.trim()) return;
+  const handleAskQuestion = async (question: string) => {
+    if (!question.trim() || isAnalyzing) return;
     setIsAnalyzing(true);
+    setErrorMessage(null);
 
-    setTimeout(() => {
-      let response: InsightAnswer;
+    try {
+      const response = await askHarpiaAi(question, municipalities);
 
-      if (question.includes('90 dias') || question.includes('janela')) {
-        const matching = municipalities.filter((m) => m.janela === '0–90 dias');
-        const names = matching.map((m) => `${m.nome} / ${m.uf}`).join(', ');
+      const formattedAnswer: InsightAnswer = {
+        ...response,
+        query: question,
+        prioridadeBadge: response.prioridade?.toUpperCase() || 'ANÁLISE ESTRATÉGICA',
+        prioridadeColor: getPriorityColor(response.prioridade || ''),
+      };
 
-        response = {
-          query: question,
-          prioridadeBadge: 'JANELA IMINENTE',
-          prioridadeColor: 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30',
-          conclusao: `Foram identificados ${matching.length} municípios com sinais de contratação nos próximos 90 dias: ${names}.`,
-          justificativa:
-            'A estimativa foi calculada a partir de contratos com término no 4º trimestre de 2026 e avisos prévios de compras publicados no PNCP para planejamento do próximo ano letivo.',
-          sinais: [
-            'Contratos em vigência final sem margem para novos aditivos sem licitação',
-            'Previsão de crédito suplementar na LOA em tramitação',
-            'Termos de referência ou audiências públicas preliminares abertas',
-          ],
-          cautelas: [
-            'Prazos regimentais dos órgãos de controle podem deslocar publicações de editais em até 30 dias',
-          ],
-          fontes: ['PNCP', 'Diários Oficiais Eletrônicos', 'Siconfi RREO'],
-          confianca: 'Alta (92%)',
-        };
-      } else if (question.includes('capacidade') && question.includes('necessidade')) {
-        const matching = municipalities
-          .filter((m) => m.score.fiscal >= 24 && m.score.educacao >= 20)
-          .sort((a, b) => b.score.total - a.score.total);
-        const names = matching.map((m) => `${m.nome} (${m.score.total} pts)`).join(', ');
-
-        response = {
-          query: question,
-          prioridadeBadge: 'POTENCIAL ELEVADO',
-          prioridadeColor: 'bg-[#00DDF2]/15 text-[#00DDF2] border border-[#00DDF2]/30',
-          conclusao: `Os municípios que melhor combinam solvência fiscal e carência pedagógica urgente são: ${names}.`,
-          justificativa:
-            'Esses municípios arrecadam bem, possuem disponibilidade em caixa para investimentos e registram índices do IDEB abaixo das metas estabelecidas, tornando compras pedagógicas prioritárias para os gestores.',
-          sinais: [
-            'Arrecadação própria e repasses de Fundeb acima da média regional',
-            'Gap relevante de proficiência no SAEB (especialmente matemática)',
-            'Disponibilidade de caixa sem comprometimento excessivo por restos a pagar',
-          ],
-          cautelas: [
-            'Exigência de demonstração robusta de ganhos de aprendizagem em comitês técnicos municipais',
-          ],
-          fontes: ['Siconfi', 'INEP Censo', 'IDEB/SAEB', 'Tesouro Nacional'],
-          confianca: 'Alta (89%)',
-        };
-      } else if (question.includes('validar') || question.includes('validadas') || question.includes('risco')) {
-        response = {
-          query: question,
-          prioridadeBadge: 'ATENÇÃO NECESSÁRIA',
-          prioridadeColor: 'bg-amber-500/15 text-amber-400 border border-amber-500/30',
-          conclusao:
-            'Município Sigma / PE e Município Iota / AM possuem dados que demandam diligência adicional antes de qualquer abordagem comercial.',
-          justificativa:
-            'Identificou-se no Município Sigma pressão de restos a pagar e recente aditivo contratual de 12 meses. No Município Iota, desafios logísticos e convênios federais dependem de liberação de emendas no FNDE.',
-          sinais: [
-            'Contrato de terceiros recentemente renovado bloqueia nova licitação imediata',
-            'Alerta da LRF sobre limites de despesa em monitoramento pelo TCE',
-          ],
-          cautelas: [
-            'Validar status de aditivos e certidões negativas de débito antes de visitas presenciais',
-          ],
-          fontes: ['TCEs Estaduais', 'Siconfi', 'Simec/FNDE'],
-          confianca: 'Média (74%)',
-          targetMunicipalityId: 'mun-sigma',
-        };
-      } else {
-        response = {
-          query: question,
-          prioridadeBadge: 'ANÁLISE INTELIGENTE',
-          prioridadeColor: 'bg-[#00DDF2]/15 text-[#00DDF2] border border-[#00DDF2]/30',
-          conclusao: `A análise para a consulta solicitada aponta alta correlação entre o ciclo orçamentário da educação e a janela de novas contratações públicas.`,
-          justificativa:
-            'A base consolidada da Harpia Tech monitora diariamente a execução do Fundeb e atos do PNCP para antecipar demandas antes da publicação de editais formais.',
-          sinais: [
-            'Cruzamento automatizado de matrizes fiscais do Siconfi',
-            'Indexação semântica de termos de referência no PNCP',
-            'Mapeamento de organogramas das secretarias municipais de educação',
-          ],
-          cautelas: [
-            'Sempre confirmar dotação orçamentária nominal na LOA com o setor de finanças',
-          ],
-          fontes: ['Siconfi', 'PNCP', 'INEP', 'Diários Oficiais'],
-          confianca: 'Alta (88%)',
-        };
-      }
-
-      setHistory([response, ...history]);
-      setIsAnalyzing(false);
+      setHistory((prev) => [formattedAnswer, ...prev]);
       setInputText('');
-    }, 600);
+    } catch (err: any) {
+      console.error('Harpia Insights error:', err);
+      setErrorMessage(
+        err?.message || 'Não foi possível concluir a análise neste momento. Tente novamente.'
+      );
+    } finally {
+      setIsAnalyzing(false);
+    }
   };
 
   return (
@@ -181,20 +97,27 @@ export const HarpiaInsightsView: React.FC<HarpiaInsightsViewProps> = ({
             </h1>
           </div>
           <p className="text-xs text-slate-400 mt-1 max-w-2xl leading-relaxed">
-            Pergunte à inteligência da Harpia Tech sobre prioridades, justificativas de score, cruzamentos fiscais e sinais de contratação.
+            Copiloto analítico B2G integrado com IA para responder dúvidas sobre prioridades, cruzamentos fiscais, demandas pedagógicas e janelas contratuais.
           </p>
         </div>
 
-        <span className="text-[11px] text-slate-400 px-3 py-1.5 rounded-lg bg-[#0A1329] border border-[#16264C] self-start sm:self-center">
-          Base analítica: 5.572 municípios · 8 fontes públicas
-        </span>
+        <div className="flex items-center gap-2 self-start sm:self-center">
+          <span className="text-[11px] font-mono text-slate-400 px-3 py-1.5 rounded-lg bg-[#0A1329] border border-[#16264C]">
+            Motor Gemini Ativo · Dataset Demonstrativo ({municipalities.length} municípios)
+          </span>
+        </div>
       </div>
 
       {/* Chatbot-style Question Input & Suggestions */}
       <div className="p-5 rounded-2xl bg-[#0A1329] border border-[#16264C] space-y-4 shadow-xl">
-        <div className="flex items-center gap-2 text-xs font-bold text-white uppercase tracking-wider">
-          <HelpCircle className="w-4 h-4 text-[#00DDF2]" />
-          <span>Pergunte à Harpia</span>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 text-xs font-bold text-white uppercase tracking-wider">
+            <HelpCircle className="w-4 h-4 text-[#00DDF2]" />
+            <span>Pergunte à Harpia</span>
+          </div>
+          <span className="text-[11px] text-slate-400">
+            Respostas baseadas estritamente nos dados do ambiente demonstrativo
+          </span>
         </div>
 
         {/* Input Bar */}
@@ -206,16 +129,26 @@ export const HarpiaInsightsView: React.FC<HarpiaInsightsViewProps> = ({
             onKeyDown={(e) => {
               if (e.key === 'Enter') handleAskQuestion(inputText);
             }}
+            disabled={isAnalyzing}
             placeholder="Digite sua pergunta sobre municípios, scores ou contratações públicas..."
-            className="flex-1 bg-transparent px-3 py-1.5 text-xs sm:text-sm text-white placeholder-slate-400 focus:outline-none"
+            className="flex-1 bg-transparent px-3 py-1.5 text-xs sm:text-sm text-white placeholder-slate-400 focus:outline-none disabled:opacity-50"
           />
           <button
             onClick={() => handleAskQuestion(inputText)}
             disabled={!inputText.trim() || isAnalyzing}
             className="px-4 py-2 rounded-lg bg-[#00DDF2] hover:bg-[#00c5d8] disabled:opacity-40 text-[#050B1E] text-xs font-bold transition-all flex items-center gap-1.5 shrink-0"
           >
-            <span>{isAnalyzing ? 'Analisando...' : 'Analisar'}</span>
-            <Send className="w-3.5 h-3.5" />
+            {isAnalyzing ? (
+              <>
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                <span>Analisando...</span>
+              </>
+            ) : (
+              <>
+                <span>Analisar</span>
+                <Send className="w-3.5 h-3.5" />
+              </>
+            )}
           </button>
         </div>
 
@@ -228,8 +161,9 @@ export const HarpiaInsightsView: React.FC<HarpiaInsightsViewProps> = ({
             {PRESET_QUESTIONS.map((question) => (
               <button
                 key={question}
+                disabled={isAnalyzing}
                 onClick={() => handleAskQuestion(question)}
-                className="px-3 py-1.5 rounded-lg bg-[#050B1E] border border-[#16264C] hover:border-[#00DDF2]/40 text-xs text-slate-300 hover:text-white transition-colors text-left"
+                className="px-3 py-1.5 rounded-lg bg-[#050B1E] border border-[#16264C] hover:border-[#00DDF2]/40 text-xs text-slate-300 hover:text-white transition-colors text-left disabled:opacity-50"
               >
                 "{question}"
               </button>
@@ -238,12 +172,69 @@ export const HarpiaInsightsView: React.FC<HarpiaInsightsViewProps> = ({
         </div>
       </div>
 
+      {/* Error state if Gemini fails */}
+      {errorMessage && (
+        <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-start justify-between gap-3 text-xs text-rose-300 animate-in fade-in">
+          <div className="flex items-start gap-2.5">
+            <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+            <div>
+              <p className="font-semibold text-rose-200">{errorMessage}</p>
+              <p className="text-[11px] text-rose-400/80 mt-0.5">
+                Verifique a conexão ou tente reformular a consulta baseada nos dados do demonstrativo.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => setErrorMessage(null)}
+            className="text-xs text-rose-400 hover:underline shrink-0"
+          >
+            Fechar
+          </button>
+        </div>
+      )}
+
+      {/* Loading state indicator */}
+      {isAnalyzing && (
+        <div className="p-6 rounded-2xl bg-[#0A1329] border border-[#00DDF2]/30 flex flex-col items-center justify-center gap-3 text-center animate-pulse">
+          <Loader2 className="w-7 h-7 text-[#00DDF2] animate-spin" />
+          <div>
+            <p className="text-xs font-semibold text-white">
+              Processando indicadores com o motor analítico Harpia...
+            </p>
+            <p className="text-[11px] text-slate-400 mt-0.5">
+              Cruzando capacidade fiscal, carência educacional e cronograma de contratação.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Initial state empty prompt helper if no history yet */}
+      {history.length === 0 && !isAnalyzing && !errorMessage && (
+        <div className="p-8 rounded-2xl bg-[#0A1329]/60 border border-dashed border-[#16264C] text-center space-y-2">
+          <Sparkles className="w-8 h-8 text-[#00DDF2] mx-auto opacity-50" />
+          <h3 className="text-xs font-bold text-white uppercase tracking-wider">
+            Assistente Pronto para Consultas
+          </h3>
+          <p className="text-xs text-slate-400 max-w-lg mx-auto leading-relaxed">
+            Selecione uma das sugestões acima ou digite perguntas comparativas, buscas por janelas de compras ou validação de cautelas orçamentárias.
+          </p>
+        </div>
+      )}
+
       {/* Answers Feed */}
       <div className="space-y-5">
         {history.map((ans, idx) => {
-          const targetMuni = ans.targetMunicipalityId
-            ? municipalities.find((m) => m.id === ans.targetMunicipalityId)
-            : null;
+          // Find matching municipalities
+          const relatedMunis = (ans.municipiosRelacionados || [])
+            .map((term) =>
+              municipalities.find(
+                (m) =>
+                  m.id.toLowerCase() === term.toLowerCase() ||
+                  m.nome.toLowerCase() === term.toLowerCase() ||
+                  m.nome.toLowerCase().includes(term.toLowerCase())
+              )
+            )
+            .filter((m): m is Municipality => Boolean(m));
 
           return (
             <div
@@ -285,15 +276,19 @@ export const HarpiaInsightsView: React.FC<HarpiaInsightsViewProps> = ({
                 {/* Sinais */}
                 <div className="p-4 rounded-xl bg-[#050B1E] border border-[#16264C]">
                   <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider block mb-2">
-                    Por quê? Sinais que sustentam a recomendação
+                    Por quê? Sinais identificados
                   </span>
                   <ul className="space-y-1.5 text-xs text-slate-300">
-                    {ans.sinais.map((s, sIdx) => (
-                      <li key={sIdx} className="flex items-start gap-1.5">
-                        <span className="text-emerald-400 font-bold">+</span>
-                        <span>{s}</span>
-                      </li>
-                    ))}
+                    {ans.sinais && ans.sinais.length > 0 ? (
+                      ans.sinais.map((s, sIdx) => (
+                        <li key={sIdx} className="flex items-start gap-1.5">
+                          <span className="text-emerald-400 font-bold">+</span>
+                          <span>{s}</span>
+                        </li>
+                      ))
+                    ) : (
+                      <li className="text-slate-400 text-[11px]">Nenhum sinal adicional reportado.</li>
+                    )}
                   </ul>
                 </div>
 
@@ -303,47 +298,70 @@ export const HarpiaInsightsView: React.FC<HarpiaInsightsViewProps> = ({
                     Atenção & Cautelas a validar
                   </span>
                   <ul className="space-y-1.5 text-xs text-slate-300">
-                    {ans.cautelas.map((c, cIdx) => (
-                      <li key={cIdx} className="flex items-start gap-1.5">
-                        <span className="text-amber-400 font-bold">-</span>
-                        <span>{c}</span>
-                      </li>
-                    ))}
+                    {ans.cautelas && ans.cautelas.length > 0 ? (
+                      ans.cautelas.map((c, cIdx) => (
+                        <li key={cIdx} className="flex items-start gap-1.5">
+                          <span className="text-amber-400 font-bold">-</span>
+                          <span>{c}</span>
+                        </li>
+                      ))
+                    ) : (
+                      <li className="text-slate-400 text-[11px]">Nenhuma cautela identificada no dataset.</li>
+                    )}
                   </ul>
                 </div>
               </div>
+
+              {/* Related Municipalities links */}
+              {relatedMunis.length > 0 && (
+                <div className="pt-2 border-t border-[#16264C]/60 flex items-center gap-2 flex-wrap text-xs">
+                  <span className="text-slate-400 text-[11px] font-semibold uppercase tracking-wider">
+                    Municípios Relacionados:
+                  </span>
+                  {relatedMunis.map((m) => (
+                    <button
+                      key={m.id}
+                      onClick={() => onSelectMunicipality(m)}
+                      className="px-2.5 py-1 rounded-lg bg-[#050B1E] hover:bg-[#16264C] text-[#00DDF2] border border-[#00DDF2]/30 text-xs font-semibold transition-colors flex items-center gap-1"
+                    >
+                      <span>{m.nome} / {m.uf}</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </button>
+                  ))}
+                </div>
+              )}
 
               {/* Fontes utilizadas */}
               <div className="pt-2 border-t border-[#16264C] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-2 flex-wrap text-xs">
                   <span className="text-slate-400 text-[11px] font-semibold uppercase tracking-wider">
-                    Fontes:
+                    Fontes de Referência Previstas:
                   </span>
-                  {ans.fontes.map((f, fIdx) => (
-                    <span
-                      key={fIdx}
-                      className="px-2 py-0.5 rounded bg-[#050B1E] text-slate-300 border border-[#16264C] text-[10px]"
-                    >
-                      {f}
-                    </span>
-                  ))}
+                  {ans.fontes && ans.fontes.length > 0 ? (
+                    ans.fontes.map((f, fIdx) => (
+                      <span
+                        key={fIdx}
+                        className="px-2 py-0.5 rounded bg-[#050B1E] text-slate-300 border border-[#16264C] text-[10px]"
+                      >
+                        {f}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-slate-400 text-[10px]">Dataset demonstrativo Harpia Tech</span>
+                  )}
                 </div>
-
-                {targetMuni && (
-                  <button
-                    onClick={() => onSelectMunicipality(targetMuni)}
-                    className="text-xs text-[#00DDF2] hover:underline font-semibold flex items-center gap-1 self-start sm:self-auto"
-                  >
-                    Ver Ficha de {targetMuni.nome} →
-                  </button>
-                )}
               </div>
 
-              {/* Mandatory AI Disclaimer */}
-              <div className="p-2.5 rounded-lg bg-[#050B1E] border border-[#16264C] text-[11px] text-slate-400 flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-slate-400 shrink-0" />
-                <span>
-                  <strong>Aviso Metodológico:</strong> Análise assistida por IA. Recomenda-se revisão humana antes de qualquer decisão comercial.
+              {/* Mandatory AI Disclaimer & Reference Notes */}
+              <div className="p-2.5 rounded-lg bg-[#050B1E] border border-[#16264C] text-[11px] text-slate-400 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-slate-400 shrink-0" />
+                  <span>
+                    <strong>Aviso Metodológico:</strong> Análise assistida por IA sobre dataset demonstrativo. Recomenda-se revisão humana antes de qualquer decisão comercial.
+                  </span>
+                </div>
+                <span className="text-[10px] text-slate-400 font-mono">
+                  Ambiente de Demonstração
                 </span>
               </div>
             </div>

@@ -4,7 +4,6 @@ import {
   MapPin,
   Calendar,
   Layers,
-  ShieldAlert,
   CheckCircle2,
   AlertTriangle,
   ArrowRight,
@@ -19,12 +18,12 @@ import {
   Bookmark,
   BookmarkCheck,
   Building2,
-  FileText,
   Clock,
   Download,
-  Share2,
+  ShieldCheck,
+  Zap,
 } from 'lucide-react';
-import { Municipality, PriorityLevel } from '../types';
+import { Municipality } from '../types';
 
 interface MunicipalityDetailModalProps {
   municipality: Municipality | null;
@@ -42,7 +41,6 @@ export const MunicipalityDetailModal: React.FC<MunicipalityDetailModalProps> = (
   onChangePipelineStage,
 }) => {
   const [activeTab, setActiveTab] = useState<TabType>('visao-geral');
-  const [showTooltip, setShowTooltip] = useState(false);
   const [exportNotice, setExportNotice] = useState(false);
 
   if (!municipality) return null;
@@ -63,69 +61,108 @@ export const MunicipalityDetailModal: React.FC<MunicipalityDetailModalProps> = (
     setTimeout(() => setExportNotice(false), 2500);
   };
 
+  // Dimension explanations based on weighted points
+  const getFiscalExplanation = (pts: number) => {
+    if (pts >= 26) return 'Alta solidez fiscal e boa disponibilidade de caixa.';
+    if (pts >= 20) return 'Boa capacidade fiscal e disponibilidade relativa.';
+    return 'Restrições de caixa e pressão por restos a pagar.';
+  };
+
+  const getEducationExplanation = (pts: number) => {
+    if (pts >= 21) return 'Necessidade educacional relevante e urgência pedagógica.';
+    if (pts >= 16) return 'Demanda moderada com foco em recomposição de aprendizagem.';
+    return 'Indicadores de aprendizagem acima da média regional.';
+  };
+
+  const getContractingExplanation = (pts: number) => {
+    if (pts >= 21) return 'Janela iminente e contratos prestes a expirar.';
+    if (pts >= 16) return 'Janela em planejamento com sinais no PCA/LOA.';
+    return 'Contrato vigente ou ausência de sinal de certame.';
+  };
+
+  const getAccessExplanation = (pts: number) => {
+    if (pts >= 8) return 'Canais institucionais e lideranças mapeadas com sucesso.';
+    if (pts >= 6) return 'Órgãos mapeados com contatos institucionais válidos.';
+    return 'Canais de contato com pendência de verificação cadastral.';
+  };
+
+  const getGovernanceExplanation = (pts: number) => {
+    if (pts >= 8) return 'Gestão fiscal regular e transparência satisfatória.';
+    if (pts >= 6) return 'Procedimentos regulares de controle sem sanções vigentes.';
+    return 'Apurações de rotina recomendam validação documental.';
+  };
+
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-[#050B1E]/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 animate-in fade-in duration-150">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-[#050B1E]/85 backdrop-blur-sm flex items-center justify-center p-2 sm:p-5 animate-in fade-in duration-150">
       <div
-        className="w-full max-w-5xl bg-[#070F26] border border-[#16264C] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]"
+        className="w-full max-w-5xl bg-[#070F26] border border-[#16264C] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[94vh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* ===================================================
-            HEADER
+            1. TOP SECTION — POLISHED HIERARCHY
            =================================================== */}
-        <div className="p-5 sm:p-6 bg-[#0A1329] border-b border-[#16264C] flex flex-col gap-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="flex items-start sm:items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-[#050B1E] border border-[#00DDF2]/30 flex items-center justify-center text-[#00DDF2] shadow-[0_0_15px_rgba(0,221,242,0.12)] shrink-0">
+        <div className="p-5 sm:p-6 bg-[#0A1329] border-b border-[#16264C] flex flex-col gap-5">
+          {/* Header Row: Identity, Priority, Window, Actions */}
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+            <div className="flex items-start gap-3.5">
+              <div className="w-12 h-12 rounded-xl bg-[#050B1E] border border-[#00DDF2]/40 flex items-center justify-center text-[#00DDF2] shadow-[0_0_15px_rgba(0,221,242,0.15)] shrink-0">
                 <MapPin className="w-6 h-6" />
               </div>
+
               <div>
                 <div className="flex items-center gap-2 flex-wrap">
-                  <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+                  <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
                     {municipality.nome}
                   </h1>
-                  <span className="px-2 py-0.5 text-xs font-mono-numbers bg-[#16264C] text-white rounded font-semibold border border-[#1F3870]">
+                  <span className="px-2 py-0.5 text-xs font-mono-numbers bg-[#16264C] text-white rounded font-bold border border-[#1F3870]">
                     {municipality.uf}
                   </span>
                   <span className="text-xs text-slate-400 font-medium">
                     Região {municipality.regiao} · {municipality.populacao.toLocaleString('pt-BR')} hab.
                   </span>
                   <span
-                    className={`px-2.5 py-0.5 text-xs font-semibold rounded ${
+                    className={`px-2.5 py-0.5 text-xs font-bold rounded ${
                       municipality.prioridade === 'Alta prioridade'
-                        ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
+                        ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
                         : municipality.prioridade === 'Média prioridade'
-                        ? 'bg-[#00DDF2]/10 text-[#00DDF2] border border-[#00DDF2]/30'
-                        : 'bg-amber-500/10 text-amber-400 border border-amber-500/30'
+                        ? 'bg-[#00DDF2]/15 text-[#00DDF2] border border-[#00DDF2]/30'
+                        : 'bg-amber-500/15 text-amber-400 border border-amber-500/30'
                     }`}
                   >
                     {municipality.prioridade.toUpperCase()}
                   </span>
                 </div>
 
-                <div className="flex items-center gap-3 text-xs text-slate-400 mt-1 flex-wrap">
-                  <span className="flex items-center gap-1">
-                    <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                    {municipality.atualizadoEm}
+                {/* Subtitle key attributes strip */}
+                <div className="flex items-center gap-2 sm:gap-3 text-xs text-slate-300 mt-2 flex-wrap">
+                  <span className="flex items-center gap-1 font-medium">
+                    <Clock className="w-3.5 h-3.5 text-[#00DDF2]" />
+                    Janela: <strong className="text-white font-mono-numbers">{municipality.janela}</strong>
                   </span>
-                  <span>·</span>
-                  <span className="flex items-center gap-1">
-                    <Database className="w-3.5 h-3.5 text-[#00DDF2]" />
-                    {municipality.fontesConsultadasCount} fontes integradas
-                  </span>
-                  <span>·</span>
+                  <span className="text-slate-400">·</span>
                   <span className="flex items-center gap-1">
                     <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                    Confiança {municipality.confianca}
+                    Confiança <strong className="text-white">{municipality.confianca}</strong>
+                  </span>
+                  <span className="text-slate-400">·</span>
+                  <span className="flex items-center gap-1 text-slate-400">
+                    <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                    Atualizado no demonstrativo: <span className="text-slate-300">{municipality.atualizadoEm}</span>
+                  </span>
+                  <span className="text-slate-400">·</span>
+                  <span className="flex items-center gap-1 text-slate-400">
+                    <Database className="w-3.5 h-3.5 text-[#00DDF2]" />
+                    <span className="text-slate-300">{municipality.fontesConsultadasCount} bases de referência</span>
                   </span>
                 </div>
               </div>
             </div>
 
             {/* Actions: Watchlist, Export, Close */}
-            <div className="flex items-center gap-2 self-end sm:self-center">
+            <div className="flex items-center gap-2 self-end sm:self-start">
               <button
                 onClick={() => onToggleMonitoring(municipality.id)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
                   municipality.isMonitored
                     ? 'bg-[#00DDF2]/15 border-[#00DDF2] text-[#00DDF2]'
                     : 'bg-[#0F1C3C] border-[#16264C] text-slate-300 hover:text-white hover:border-slate-500'
@@ -162,154 +199,165 @@ export const MunicipalityDetailModal: React.FC<MunicipalityDetailModalProps> = (
           </div>
 
           {exportNotice && (
-            <div className="p-2 rounded-lg bg-[#00DDF2]/10 border border-[#00DDF2]/30 text-xs text-[#00DDF2] flex items-center justify-between animate-in fade-in">
-              <span>Dossiê B2G gerado com sucesso para demonstração comercial.</span>
-              <span className="text-[10px] font-mono-numbers">PDF · 4.2 MB</span>
+            <div className="p-2.5 rounded-lg bg-[#00DDF2]/10 border border-[#00DDF2]/30 text-xs text-[#00DDF2] flex items-center justify-between animate-in fade-in">
+              <span>Dossiê B2G gerado com sucesso para este município demonstrativo.</span>
+              <span className="text-[10px] font-mono-numbers">PDF · 3.8 MB</span>
             </div>
           )}
 
           {/* ===================================================
-              5 PILLAR CARDS + SCORE HARPIA
+              TOTAL SCORE & FIVE DIMENSIONS CLEAR DISPLAY
              =================================================== */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 pt-1">
-            {/* Score Harpia Total Card with Tooltip */}
-            <div className="relative p-3 rounded-xl bg-[#050B1E] border border-[#00DDF2]/40 shadow-[0_0_18px_rgba(0,221,242,0.08)] col-span-2 sm:col-span-1">
-              <div className="flex items-center justify-between">
-                <span className="text-[11px] font-bold text-[#00DDF2] tracking-wider uppercase">
-                  Score Harpia
-                </span>
-                <div className="relative">
-                  <button
-                    onMouseEnter={() => setShowTooltip(true)}
-                    onMouseLeave={() => setShowTooltip(false)}
-                    onClick={() => setShowTooltip(!showTooltip)}
-                    className="text-slate-400 hover:text-white p-0.5"
-                  >
-                    <Info className="w-3.5 h-3.5" />
-                  </button>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 pt-1">
+            {/* Score Harpia Total Card with Note */}
+            <div className="lg:col-span-3 p-4 rounded-xl bg-[#050B1E] border border-[#00DDF2]/40 shadow-[0_0_20px_rgba(0,221,242,0.1)] flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-bold text-[#00DDF2] tracking-wider uppercase flex items-center gap-1.5">
+                    <Zap className="w-3.5 h-3.5 text-[#00DDF2]" />
+                    Score Harpia
+                  </span>
+                  <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-[#0A1329] text-slate-400 border border-[#16264C]">
+                    Total
+                  </span>
+                </div>
 
-                  {showTooltip && (
-                    <div className="absolute right-0 top-6 z-40 w-64 p-2.5 rounded-lg bg-[#0A1329] border border-[#00DDF2]/40 text-[11px] text-slate-200 shadow-xl leading-relaxed">
-                      A pontuação organiza sinais e evidências para apoiar priorização comercial. Não prevê nem garante contratação pública.
-                    </div>
-                  )}
+                <div className="mt-2 flex items-baseline gap-1.5">
+                  <span className="text-3xl sm:text-4xl font-extrabold text-white font-mono-numbers">
+                    {score.total}
+                  </span>
+                  <span className="text-sm text-slate-400 font-mono-numbers font-medium">/100</span>
                 </div>
               </div>
-              <div className="mt-1 flex items-baseline gap-1">
-                <span className="text-2xl sm:text-3xl font-extrabold text-white font-mono-numbers">
-                  {score.total}
-                </span>
-                <span className="text-xs text-slate-400 font-mono-numbers">/100</span>
-              </div>
-              <span className="text-[10px] text-slate-400 block mt-0.5">
-                Índice de Oportunidade
-              </span>
+
+              {/* Explanatory note close to total score */}
+              <p className="text-[10px] text-slate-400 leading-snug pt-2 mt-2 border-t border-[#16264C]/70">
+                O Score Harpia organiza sinais comerciais e evidências para apoiar priorização. Não representa garantia ou previsão de contratação.
+              </p>
             </div>
 
-            {/* F - Capacidade (30 pts max) */}
-            <div className="p-3 rounded-xl bg-[#050B1E] border border-[#16264C]">
-              <div className="flex items-center justify-between text-xs text-slate-400">
-                <span className="font-semibold text-white">F · Capacidade</span>
-                <span className="text-[10px] text-slate-400 font-mono">Max 30</span>
-              </div>
-              <div className="mt-1 flex items-baseline gap-1">
-                <span className="text-xl font-bold text-white font-mono-numbers">
-                  {score.fiscal}
-                </span>
-                <span className="text-[11px] text-slate-400 font-mono-numbers">/30</span>
-              </div>
-              <div className="w-full bg-[#16264C] h-1.5 rounded-full mt-2 overflow-hidden">
-                <div
-                  className="bg-[#00DDF2] h-full rounded-full"
-                  style={{ width: `${(score.fiscal / 30) * 100}%` }}
-                />
-              </div>
-            </div>
+            {/* Five Dimensions Cards (9 cols, 5 equal items) */}
+            <div className="lg:col-span-9 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-2.5">
+              {/* 1. Fiscal (30 pts max) */}
+              <div className="p-3.5 rounded-xl bg-[#050B1E] border border-[#16264C] flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between text-xs mb-1">
+                    <span className="font-bold text-white">Fiscal</span>
+                    <span className="text-sm font-mono-numbers font-bold text-[#00DDF2]">
+                      {score.fiscal} <span className="text-[10px] text-slate-400 font-normal">/ 30</span>
+                    </span>
+                  </div>
 
-            {/* E - Necessidade (25 pts max) */}
-            <div className="p-3 rounded-xl bg-[#050B1E] border border-[#16264C]">
-              <div className="flex items-center justify-between text-xs text-slate-400">
-                <span className="font-semibold text-white">E · Necessidade</span>
-                <span className="text-[10px] text-slate-400 font-mono">Max 25</span>
-              </div>
-              <div className="mt-1 flex items-baseline gap-1">
-                <span className="text-xl font-bold text-white font-mono-numbers">
-                  {score.educacao}
-                </span>
-                <span className="text-[11px] text-slate-400 font-mono-numbers">/25</span>
-              </div>
-              <div className="w-full bg-[#16264C] h-1.5 rounded-full mt-2 overflow-hidden">
-                <div
-                  className="bg-emerald-400 h-full rounded-full"
-                  style={{ width: `${(score.educacao / 25) * 100}%` }}
-                />
-              </div>
-            </div>
+                  <div className="w-full bg-[#16264C] h-1.5 rounded-full overflow-hidden my-2">
+                    <div
+                      className="bg-[#00DDF2] h-full rounded-full transition-all"
+                      style={{ width: `${(score.fiscal / 30) * 100}%` }}
+                    />
+                  </div>
+                </div>
 
-            {/* C - Contratação (25 pts max) */}
-            <div className="p-3 rounded-xl bg-[#050B1E] border border-[#16264C]">
-              <div className="flex items-center justify-between text-xs text-slate-400">
-                <span className="font-semibold text-white">C · Contratação</span>
-                <span className="text-[10px] text-slate-400 font-mono">Max 25</span>
+                <p className="text-[10.5px] text-slate-400 leading-snug mt-1">
+                  {getFiscalExplanation(score.fiscal)}
+                </p>
               </div>
-              <div className="mt-1 flex items-baseline gap-1">
-                <span className="text-xl font-bold text-white font-mono-numbers">
-                  {score.contratacao}
-                </span>
-                <span className="text-[11px] text-slate-400 font-mono-numbers">/25</span>
-              </div>
-              <div className="w-full bg-[#16264C] h-1.5 rounded-full mt-2 overflow-hidden">
-                <div
-                  className="bg-cyan-400 h-full rounded-full"
-                  style={{ width: `${(score.contratacao / 25) * 100}%` }}
-                />
-              </div>
-            </div>
 
-            {/* A - Acesso (10 pts max) */}
-            <div className="p-3 rounded-xl bg-[#050B1E] border border-[#16264C]">
-              <div className="flex items-center justify-between text-xs text-slate-400">
-                <span className="font-semibold text-white">A · Acesso</span>
-                <span className="text-[10px] text-slate-400 font-mono">Max 10</span>
-              </div>
-              <div className="mt-1 flex items-baseline gap-1">
-                <span className="text-xl font-bold text-white font-mono-numbers">
-                  {score.acesso}
-                </span>
-                <span className="text-[11px] text-slate-400 font-mono-numbers">/10</span>
-              </div>
-              <div className="w-full bg-[#16264C] h-1.5 rounded-full mt-2 overflow-hidden">
-                <div
-                  className="bg-indigo-400 h-full rounded-full"
-                  style={{ width: `${(score.acesso / 10) * 100}%` }}
-                />
-              </div>
-            </div>
+              {/* 2. Educação (25 pts max) */}
+              <div className="p-3.5 rounded-xl bg-[#050B1E] border border-[#16264C] flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between text-xs mb-1">
+                    <span className="font-bold text-white">Educação</span>
+                    <span className="text-sm font-mono-numbers font-bold text-emerald-400">
+                      {score.educacao} <span className="text-[10px] text-slate-400 font-normal">/ 25</span>
+                    </span>
+                  </div>
 
-            {/* G - Governança (10 pts max) */}
-            <div className="p-3 rounded-xl bg-[#050B1E] border border-[#16264C]">
-              <div className="flex items-center justify-between text-xs text-slate-400">
-                <span className="font-semibold text-white">G · Governança</span>
-                <span className="text-[10px] text-slate-400 font-mono">Max 10</span>
+                  <div className="w-full bg-[#16264C] h-1.5 rounded-full overflow-hidden my-2">
+                    <div
+                      className="bg-emerald-400 h-full rounded-full transition-all"
+                      style={{ width: `${(score.educacao / 25) * 100}%` }}
+                    />
+                  </div>
+                </div>
+
+                <p className="text-[10.5px] text-slate-400 leading-snug mt-1">
+                  {getEducationExplanation(score.educacao)}
+                </p>
               </div>
-              <div className="mt-1 flex items-baseline gap-1">
-                <span className="text-xl font-bold text-white font-mono-numbers">
-                  {score.governanca}
-                </span>
-                <span className="text-[11px] text-slate-400 font-mono-numbers">/10</span>
+
+              {/* 3. Contratação (25 pts max) */}
+              <div className="p-3.5 rounded-xl bg-[#050B1E] border border-[#16264C] flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between text-xs mb-1">
+                    <span className="font-bold text-white">Contratação</span>
+                    <span className="text-sm font-mono-numbers font-bold text-cyan-400">
+                      {score.contratacao} <span className="text-[10px] text-slate-400 font-normal">/ 25</span>
+                    </span>
+                  </div>
+
+                  <div className="w-full bg-[#16264C] h-1.5 rounded-full overflow-hidden my-2">
+                    <div
+                      className="bg-cyan-400 h-full rounded-full transition-all"
+                      style={{ width: `${(score.contratacao / 25) * 100}%` }}
+                    />
+                  </div>
+                </div>
+
+                <p className="text-[10.5px] text-slate-400 leading-snug mt-1">
+                  {getContractingExplanation(score.contratacao)}
+                </p>
               </div>
-              <div className="w-full bg-[#16264C] h-1.5 rounded-full mt-2 overflow-hidden">
-                <div
-                  className="bg-violet-400 h-full rounded-full"
-                  style={{ width: `${(score.governanca / 10) * 100}%` }}
-                />
+
+              {/* 4. Acesso Institucional (10 pts max) */}
+              <div className="p-3.5 rounded-xl bg-[#050B1E] border border-[#16264C] flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between text-xs mb-1">
+                    <span className="font-bold text-white">Acesso</span>
+                    <span className="text-sm font-mono-numbers font-bold text-indigo-400">
+                      {score.acesso} <span className="text-[10px] text-slate-400 font-normal">/ 10</span>
+                    </span>
+                  </div>
+
+                  <div className="w-full bg-[#16264C] h-1.5 rounded-full overflow-hidden my-2">
+                    <div
+                      className="bg-indigo-400 h-full rounded-full transition-all"
+                      style={{ width: `${(score.acesso / 10) * 100}%` }}
+                    />
+                  </div>
+                </div>
+
+                <p className="text-[10.5px] text-slate-400 leading-snug mt-1">
+                  {getAccessExplanation(score.acesso)}
+                </p>
+              </div>
+
+              {/* 5. Governança (10 pts max) */}
+              <div className="p-3.5 rounded-xl bg-[#050B1E] border border-[#16264C] flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between text-xs mb-1">
+                    <span className="font-bold text-white">Governança</span>
+                    <span className="text-sm font-mono-numbers font-bold text-violet-400">
+                      {score.governanca} <span className="text-[10px] text-slate-400 font-normal">/ 10</span>
+                    </span>
+                  </div>
+
+                  <div className="w-full bg-[#16264C] h-1.5 rounded-full overflow-hidden my-2">
+                    <div
+                      className="bg-violet-400 h-full rounded-full transition-all"
+                      style={{ width: `${(score.governanca / 10) * 100}%` }}
+                    />
+                  </div>
+                </div>
+
+                <p className="text-[10.5px] text-slate-400 leading-snug mt-1">
+                  {getGovernanceExplanation(score.governanca)}
+                </p>
               </div>
             </div>
           </div>
         </div>
 
         {/* ===================================================
-            TABS BAR
+            TABS BAR (ALL 7 PRESERVED)
            =================================================== */}
         <div className="px-6 bg-[#070F26] border-b border-[#16264C] flex items-center gap-2 overflow-x-auto">
           {[
@@ -347,78 +395,89 @@ export const MunicipalityDetailModal: React.FC<MunicipalityDetailModalProps> = (
           {/* 1. VISÃO GERAL */}
           {activeTab === 'visao-geral' && (
             <div className="space-y-6">
-              {/* Leitura Harpia */}
-              <div className="p-5 rounded-xl bg-[#0A1329] border border-[#16264C]">
-                <div className="flex items-center justify-between mb-3">
+              {/* Leitura Harpia Summary Header */}
+              <div className="p-5 rounded-2xl bg-[#0A1329] border border-[#16264C] space-y-3">
+                <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-[#00DDF2] animate-pulse" />
                     <h2 className="text-xs font-bold text-[#00DDF2] tracking-wider uppercase">
                       Leitura Harpia
                     </h2>
                   </div>
-                  <span className="text-[11px] text-slate-400">Síntese de Inteligência B2G</span>
+                  <span className="text-[11px] text-slate-400">Síntese Estratégica B2G</span>
                 </div>
                 <p className="text-sm text-slate-200 font-medium leading-relaxed">
                   "{leituraHarpia.resumo}"
                 </p>
               </div>
 
-              {/* Sinais Favoráveis e Cautelas */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Sinais favoráveis */}
-                <div className="p-4 rounded-xl bg-[#0A1329] border border-[#16264C]">
-                  <div className="flex items-center gap-2 text-xs font-bold text-emerald-400 uppercase tracking-wider mb-3">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                    Sinais favoráveis
+              {/* 3 BLOCKS: SINAIS FAVORÁVEIS, CAUTELAS, PRÓXIMA AÇÃO */}
+              <div className="space-y-4">
+                {/* Row: Sinais Favoráveis e Cautelas */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Bloco 1: Sinais favoráveis */}
+                  <div className="p-5 rounded-2xl bg-[#0A1329] border border-[#16264C] flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center gap-2 text-xs font-bold text-emerald-400 uppercase tracking-wider mb-3">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                        Sinais favoráveis
+                      </div>
+                      <ul className="space-y-2.5">
+                        {leituraHarpia.sinaisFavoraveis.map((sinal, idx) => (
+                          <li key={idx} className="flex items-start gap-2.5 text-xs text-slate-300 leading-normal">
+                            <span className="text-emerald-400 font-bold mt-0.5">✓</span>
+                            <span>{sinal}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   </div>
-                  <ul className="space-y-2.5">
-                    {leituraHarpia.sinaisFavoraveis.map((sinal, idx) => (
-                      <li key={idx} className="flex items-start gap-2 text-xs text-slate-300 leading-normal">
-                        <span className="text-emerald-400 font-bold mt-0.5">✓</span>
-                        <span>{sinal}</span>
-                      </li>
-                    ))}
-                  </ul>
+
+                  {/* Bloco 2: Cautelas */}
+                  <div className="p-5 rounded-2xl bg-[#0A1329] border border-[#16264C] flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center gap-2 text-xs font-bold text-amber-400 uppercase tracking-wider mb-3">
+                        <AlertTriangle className="w-4 h-4 text-amber-400" />
+                        Cautelas
+                      </div>
+                      <ul className="space-y-2.5">
+                        {leituraHarpia.cautelas.map((cautela, idx) => (
+                          <li key={idx} className="flex items-start gap-2.5 text-xs text-slate-300 leading-normal">
+                            <span className="text-amber-400 font-bold mt-0.5">!</span>
+                            <span>{cautela}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
                 </div>
 
-                {/* Cautelas */}
-                <div className="p-4 rounded-xl bg-[#0A1329] border border-[#16264C]">
-                  <div className="flex items-center gap-2 text-xs font-bold text-amber-400 uppercase tracking-wider mb-3">
-                    <AlertTriangle className="w-4 h-4 text-amber-400" />
-                    Cautelas
+                {/* Bloco 3: PRÓXIMA AÇÃO — GREATER VISUAL PROMINENCE */}
+                <div className="p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-[#00DDF2]/10 via-[#0A1329] to-[#0A1329] border-2 border-[#00DDF2]/50 shadow-[0_0_25px_rgba(0,221,242,0.15)] flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+                  <div className="space-y-1.5 max-w-2xl">
+                    <div className="flex items-center gap-2">
+                      <span className="px-2.5 py-0.5 rounded text-[10.5px] font-extrabold uppercase bg-[#00DDF2] text-[#050B1E] tracking-wider shadow-[0_0_10px_rgba(0,221,242,0.4)]">
+                        Próxima Ação Recomendada
+                      </span>
+                      <span className="text-xs text-slate-400">Orientação Técnica de Prospecção</span>
+                    </div>
+                    <p className="text-sm sm:text-base font-bold text-white leading-snug">
+                      "{leituraHarpia.proximaAcao}"
+                    </p>
                   </div>
-                  <ul className="space-y-2.5">
-                    {leituraHarpia.cautelas.map((cautela, idx) => (
-                      <li key={idx} className="flex items-start gap-2 text-xs text-slate-300 leading-normal">
-                        <span className="text-amber-400 font-bold mt-0.5">!</span>
-                        <span>{cautela}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
 
-              {/* Próxima Ação Recomendada */}
-              <div className="p-4 rounded-xl bg-[#050B1E] border border-[#00DDF2]/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                  <span className="text-[10px] font-bold text-[#00DDF2] tracking-wider uppercase block">
-                    Próxima Ação Recomendada
-                  </span>
-                  <p className="text-xs sm:text-sm font-semibold text-white mt-1">
-                    {leituraHarpia.proximaAcao}
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => onToggleMonitoring(municipality.id)}
-                    className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${
-                      municipality.isMonitored
-                        ? 'bg-[#16264C] text-[#00DDF2] border border-[#00DDF2]/30'
-                        : 'bg-[#00DDF2] text-[#050B1E] hover:bg-[#00c5d8]'
-                    }`}
-                  >
-                    {municipality.isMonitored ? 'Em monitoramento' : 'Adicionar ao monitoramento'}
-                  </button>
+                  <div className="flex items-center gap-2.5 shrink-0 self-start sm:self-center">
+                    <button
+                      onClick={() => onToggleMonitoring(municipality.id)}
+                      className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap shadow-md ${
+                        municipality.isMonitored
+                          ? 'bg-[#16264C] text-[#00DDF2] border border-[#00DDF2]/40'
+                          : 'bg-[#00DDF2] hover:bg-[#00c5d8] text-[#050B1E] shadow-[0_0_15px_rgba(0,221,242,0.3)]'
+                      }`}
+                    >
+                      {municipality.isMonitored ? 'Em monitoramento' : 'Adicionar ao monitoramento'}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -428,7 +487,7 @@ export const MunicipalityDetailModal: React.FC<MunicipalityDetailModalProps> = (
           {activeTab === 'financeiro' && (
             <div className="space-y-6">
               {/* Financial Disclaimer Banner */}
-              <div className="p-3.5 rounded-lg bg-[#0A1329] border border-amber-500/30 flex items-center gap-3 text-xs text-amber-300">
+              <div className="p-3.5 rounded-xl bg-[#0A1329] border border-amber-500/30 flex items-center gap-3 text-xs text-amber-300">
                 <Info className="w-4 h-4 shrink-0 text-amber-400" />
                 <span>
                   <strong>Atenção:</strong> Orçamento autorizado não significa recurso imediatamente disponível. Analise a disponibilidade de caixa e o índice de restos a pagar antes de estruturar ofertas comerciais.
@@ -442,7 +501,7 @@ export const MunicipalityDetailModal: React.FC<MunicipalityDetailModalProps> = (
                   <p className="text-lg font-bold text-white font-mono-numbers mt-1">
                     {fmtCurrency(financeiro.orcamentoAutorizado)}
                   </p>
-                  <span className="text-[10px] text-slate-400 block mt-1">LOA aprovada</span>
+                  <span className="text-[10px] text-slate-400 block mt-1">LOA municipal</span>
                 </div>
                 <div className="p-4 rounded-xl bg-[#0A1329] border border-[#16264C]">
                   <span className="text-xs text-slate-400">Empenhado</span>
@@ -576,7 +635,7 @@ export const MunicipalityDetailModal: React.FC<MunicipalityDetailModalProps> = (
                       <GraduationCap className="w-4 h-4 text-[#00DDF2]" />
                       Escala da Rede Municipal
                     </h3>
-                    <span className="text-[10px] text-slate-400">Censo INEP</span>
+                    <span className="text-[10px] text-slate-400">Referência INEP</span>
                   </div>
                   <div className="grid grid-cols-2 gap-3 text-xs pt-1">
                     <div className="p-2.5 rounded-lg bg-[#050B1E] border border-[#16264C]">
@@ -769,7 +828,7 @@ export const MunicipalityDetailModal: React.FC<MunicipalityDetailModalProps> = (
                     </div>
                   </div>
                   <span className="text-xs text-slate-400">
-                    Inferida por cruzamento de ciclos da LOA, PCA e PNCP
+                    Inferida por cruzamento de ciclos da LOA, PCA e dados simulados
                   </span>
                 </div>
 
@@ -794,7 +853,7 @@ export const MunicipalityDetailModal: React.FC<MunicipalityDetailModalProps> = (
                   <h3 className="text-xs font-bold text-white uppercase tracking-wider">
                     Histórico de Compras Públicas Educacionais
                   </h3>
-                  <span className="text-[11px] text-slate-400">Base PNCP & Diários Oficiais</span>
+                  <span className="text-[11px] text-slate-400 font-mono">Bases de referência PNCP / DOM</span>
                 </div>
 
                 <div className="overflow-x-auto">
@@ -806,7 +865,7 @@ export const MunicipalityDetailModal: React.FC<MunicipalityDetailModalProps> = (
                         <th className="py-2.5 px-3 font-semibold text-right">Valor</th>
                         <th className="py-2.5 px-3 font-semibold">Data</th>
                         <th className="py-2.5 px-3 font-semibold">Status / Vigência</th>
-                        <th className="py-2.5 px-3 font-semibold">Fonte</th>
+                        <th className="py-2.5 px-3 font-semibold">Fonte de Referência</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-[#16264C]/60 text-slate-300">
@@ -918,10 +977,10 @@ export const MunicipalityDetailModal: React.FC<MunicipalityDetailModalProps> = (
             <div className="space-y-6">
               <div className="p-5 rounded-xl bg-[#0A1329] border border-[#16264C] space-y-3">
                 <h3 className="text-xs font-bold text-white uppercase tracking-wider">
-                  Bases Públicas que Sustentam esta Análise
+                  Bases Públicas de Referência para este Município
                 </h3>
                 <p className="text-xs text-slate-400">
-                  Os dados apresentados para o {municipality.nome} foram capturados, consolidados e auditados a partir das seguintes fontes oficiais:
+                  Os dados simulados do {municipality.nome} foram modelados com base nos padrões metodológicos das seguintes fontes oficiais:
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
@@ -934,9 +993,9 @@ export const MunicipalityDetailModal: React.FC<MunicipalityDetailModalProps> = (
                         <Database className="w-4 h-4 text-[#00DDF2]" />
                         <span className="text-xs font-semibold text-white">{fonte}</span>
                       </div>
-                      <span className="text-[11px] text-emerald-400 font-mono flex items-center gap-1">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                        Auditado
+                      <span className="text-[11px] text-[#00DDF2] font-mono flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#00DDF2]" />
+                        Base de Referência
                       </span>
                     </div>
                   ))}
@@ -948,7 +1007,7 @@ export const MunicipalityDetailModal: React.FC<MunicipalityDetailModalProps> = (
 
         {/* Modal Footer */}
         <div className="p-4 bg-[#0A1329] border-t border-[#16264C] flex items-center justify-between text-xs text-slate-400">
-          <span>Ambiente de demonstração Harpia Tech · Atualizado conforme dados públicos consolidados</span>
+          <span>Ambiente de demonstração Harpia Tech · Dados simulados estruturados</span>
           <button
             onClick={onClose}
             className="px-4 py-2 rounded-lg bg-[#0F1C3C] hover:bg-[#16264C] text-white font-medium transition-colors"

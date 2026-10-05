@@ -8,35 +8,16 @@ import {
   Clock,
   Layers,
   Award,
+  Info,
 } from 'lucide-react';
 import { Municipality, Region } from '../types';
+import { BrazilVectorMap } from '../components/BrazilVectorMap';
+import { BRAZIL_STATES_VECTOR } from '../data/brazilMapData';
 
 interface MapViewProps {
   municipalities: Municipality[];
   onSelectMunicipality: (municipality: Municipality) => void;
 }
-
-interface StateData {
-  uf: string;
-  name: string;
-  region: Region;
-  intensity: 'alta' | 'media' | 'moderada';
-}
-
-const BRAZIL_STATES: StateData[] = [
-  { uf: 'PA', name: 'Pará', region: 'Norte', intensity: 'alta' },
-  { uf: 'AM', name: 'Amazonas', region: 'Norte', intensity: 'media' },
-  { uf: 'SP', name: 'São Paulo', region: 'Sudeste', intensity: 'alta' },
-  { uf: 'MG', name: 'Minas Gerais', region: 'Sudeste', intensity: 'media' },
-  { uf: 'PR', name: 'Paraná', region: 'Sul', intensity: 'alta' },
-  { uf: 'RS', name: 'Rio Grande do Sul', region: 'Sul', intensity: 'alta' },
-  { uf: 'BA', name: 'Bahia', region: 'Nordeste', intensity: 'alta' },
-  { uf: 'CE', name: 'Ceará', region: 'Nordeste', intensity: 'alta' },
-  { uf: 'PE', name: 'Pernambuco', region: 'Nordeste', intensity: 'moderada' },
-  { uf: 'GO', name: 'Goiás', region: 'Centro-Oeste', intensity: 'media' },
-  { uf: 'MT', name: 'Mato Grosso', region: 'Centro-Oeste', intensity: 'moderada' },
-  { uf: 'SC', name: 'Santa Catarina', region: 'Sul', intensity: 'media' },
-];
 
 export const MapView: React.FC<MapViewProps> = ({
   municipalities,
@@ -50,40 +31,51 @@ export const MapView: React.FC<MapViewProps> = ({
     return municipalities.filter((m) => m.uf === selectedUf);
   }, [municipalities, selectedUf]);
 
+  // Selected state info from vector list
+  const currentStateVector = useMemo(() => {
+    return BRAZIL_STATES_VECTOR.find((s) => s.uf === selectedUf) || BRAZIL_STATES_VECTOR[0];
+  }, [selectedUf]);
+
   // Regional summary data
   const regionalSummary = useMemo(() => {
-    const list = selectedUf
-      ? stateMunicipalities
-      : selectedRegion === 'TODAS'
-      ? municipalities
-      : municipalities.filter((m) => m.regiao === selectedRegion);
-
+    const list = stateMunicipalities;
     const count = list.length;
-    const avg = count > 0 ? (list.reduce((acc, m) => acc + m.score.total, 0) / count).toFixed(1) : '0';
+    const avg =
+      count > 0
+        ? (list.reduce((acc, m) => acc + m.score.total, 0) / count).toFixed(1)
+        : '—';
     const immediate = list.filter((m) => m.janela === '0–90 dias').length;
     const next = list.filter((m) => m.janela === '91–180 dias').length;
     const strategic = list.filter((m) => m.janela === '181–365 dias').length;
 
     return { count, avg, immediate, next, strategic };
-  }, [municipalities, stateMunicipalities, selectedUf, selectedRegion]);
+  }, [stateMunicipalities]);
 
-  const currentState = BRAZIL_STATES.find((s) => s.uf === selectedUf) || BRAZIL_STATES[0];
+  const handleSelectUf = (uf: string) => {
+    setSelectedUf(uf);
+  };
 
   return (
     <div className="space-y-6">
       {/* Title */}
-      <div>
-        <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-          Mapa de Oportunidades
-        </h1>
-        <p className="text-xs text-slate-400 mt-1 max-w-2xl leading-relaxed">
-          Navegue pelas Unidades Federativas e macrorregiões para explorar a densidade de compras públicas e prioridades educacionais.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+            Mapa de Oportunidades
+          </h1>
+          <p className="text-xs text-slate-400 mt-1 max-w-2xl leading-relaxed">
+            Navegue pelo mapa vetorial do Brasil para identificar a distribuição geográfica e a intensidade de oportunidades educacionais simuladas por UF.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#0A1329] border border-amber-500/30 text-[11px] text-amber-300 font-mono self-start sm:self-center">
+          <span>AMBIENTE DEMONSTRATIVO • DADOS SIMULADOS</span>
+        </div>
       </div>
 
-      {/* Main Grid: Interactive Map + Lateral Panel */}
+      {/* Main Grid: Interactive Vector Map + Lateral Panel */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left Side: Map & State Selector (7 cols) */}
+        {/* Left Side: Real Vector Map & Region Filter (7 cols) */}
         <div className="lg:col-span-7 space-y-4">
           {/* Region Tabs */}
           <div className="p-3 rounded-xl bg-[#0A1329] border border-[#16264C] flex items-center gap-1.5 overflow-x-auto">
@@ -94,7 +86,7 @@ export const MapView: React.FC<MapViewProps> = ({
                 onClick={() => {
                   setSelectedRegion(reg);
                   if (reg !== 'TODAS') {
-                    const firstInReg = BRAZIL_STATES.find((s) => s.region === reg);
+                    const firstInReg = BRAZIL_STATES_VECTOR.find((s) => s.region === reg);
                     if (firstInReg) setSelectedUf(firstInReg.uf);
                   }
                 }}
@@ -109,78 +101,48 @@ export const MapView: React.FC<MapViewProps> = ({
             ))}
           </div>
 
-          {/* Stylized Interactive Map Canvas */}
-          <div className="p-6 rounded-xl bg-[#0A1329] border border-[#16264C] relative min-h-[440px] flex flex-col justify-between overflow-hidden">
-            {/* Background Map Grid & Coordinates */}
-            <div className="flex items-center justify-between text-[11px] text-slate-400 z-10">
+          {/* Real Vector Brazil Map Canvas */}
+          <div className="p-5 rounded-2xl bg-[#0A1329] border border-[#16264C] relative flex flex-col justify-between overflow-hidden shadow-xl">
+            {/* Header info */}
+            <div className="flex items-center justify-between text-[11px] text-slate-400 pb-2 border-b border-[#16264C]/60 mb-2">
               <span className="flex items-center gap-1.5 font-mono">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#00DDF2]" />
-                Camada de Oportunidades B2G Ativa
+                <span className="w-1.5 h-1.5 rounded-full bg-[#00DDF2] animate-pulse" />
+                Mapa Vetorial do Brasil · Clique em uma UF para filtrar
               </span>
-              <span className="font-mono">Lat: -14.235 · Long: -51.925</span>
+              <span className="font-mono text-slate-400">26 Estados + DF</span>
             </div>
 
-            {/* Stylized State Clusters Display */}
-            <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 my-6 z-10">
-              {BRAZIL_STATES.filter(
-                (s) => selectedRegion === 'TODAS' || s.region === selectedRegion
-              ).map((state) => {
-                const isSelected = selectedUf === state.uf;
-                const muniCount = municipalities.filter((m) => m.uf === state.uf).length;
-
-                return (
-                  <button
-                    key={state.uf}
-                    onClick={() => setSelectedUf(state.uf)}
-                    className={`p-3 rounded-xl border text-left transition-all relative ${
-                      isSelected
-                        ? 'bg-[#00DDF2]/15 border-[#00DDF2] shadow-[0_0_15px_rgba(0,221,242,0.25)]'
-                        : state.intensity === 'alta'
-                        ? 'bg-[#0F1C3C]/80 border-[#00DDF2]/30 hover:border-[#00DDF2]/60'
-                        : 'bg-[#050B1E] border-[#16264C] hover:border-slate-500'
-                    }`}
-                  >
-                    {isSelected && (
-                      <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#00DDF2] animate-ping" />
-                    )}
-                    <span className="text-sm font-bold text-white font-mono-numbers block">
-                      {state.uf}
-                    </span>
-                    <span className="text-xs text-slate-300 truncate block mt-0.5">
-                      {state.name}
-                    </span>
-                    <div className="mt-2 flex items-center justify-between text-[10px]">
-                      <span className="text-slate-400">{muniCount} município{muniCount > 1 ? 's' : ''}</span>
-                      <span
-                        className={`font-semibold ${
-                          state.intensity === 'alta'
-                            ? 'text-emerald-400'
-                            : state.intensity === 'media'
-                            ? 'text-[#00DDF2]'
-                            : 'text-slate-400'
-                        }`}
-                      >
-                        {state.intensity.toUpperCase()}
-                      </span>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
+            {/* Interactive Vector Map Component */}
+            <BrazilVectorMap
+              selectedUf={selectedUf}
+              onSelectUf={handleSelectUf}
+              selectedRegion={selectedRegion}
+              municipalities={municipalities}
+            />
 
             {/* Map Legend */}
-            <div className="p-3 rounded-lg bg-[#050B1E] border border-[#16264C] flex items-center justify-between text-xs text-slate-400 z-10">
-              <div className="flex items-center gap-4">
-                <span className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded bg-emerald-400" />
-                  Alta concentração (0–90 dias)
+            <div className="pt-3 border-t border-[#16264C]/70 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400">
+              <div className="flex items-center gap-4 flex-wrap">
+                <span className="flex items-center gap-1.5 text-[11px]">
+                  <span className="w-3 h-3 rounded bg-[#00DDF2] shadow-[0_0_6px_rgba(0,221,242,0.6)]" />
+                  Estado Selecionado
                 </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded bg-[#00DDF2]" />
-                  Média concentração (91–180 dias)
+                <span className="flex items-center gap-1.5 text-[11px]">
+                  <span className="w-3 h-3 rounded bg-[rgba(0,221,242,0.42)] border border-[rgba(0,221,242,0.75)]" />
+                  Alta Intensidade
+                </span>
+                <span className="flex items-center gap-1.5 text-[11px]">
+                  <span className="w-3 h-3 rounded bg-[rgba(0,221,242,0.18)] border border-[rgba(0,221,242,0.45)]" />
+                  Média Intensidade
+                </span>
+                <span className="flex items-center gap-1.5 text-[11px]">
+                  <span className="w-3 h-3 rounded bg-[#0A1428] border border-[#16264C]" />
+                  Sem dados simulados
                 </span>
               </div>
-              <span className="font-mono text-[10px]">SIG Municipal Integrado</span>
+              <span className="font-mono text-[10px] text-slate-400">
+                Geografia Oficial IBGE
+              </span>
             </div>
           </div>
         </div>
@@ -188,24 +150,28 @@ export const MapView: React.FC<MapViewProps> = ({
         {/* Right Side: Selected State Analysis & Top Regional Opportunities (5 cols) */}
         <div className="lg:col-span-5 space-y-4">
           {/* Summary Box for Selected UF */}
-          <div className="p-5 rounded-xl bg-[#0A1329] border border-[#16264C] space-y-4">
+          <div className="p-5 rounded-2xl bg-[#0A1329] border border-[#16264C] space-y-4 shadow-lg">
             <div className="flex items-center justify-between border-b border-[#16264C] pb-3">
               <div>
                 <span className="text-[10px] font-bold text-[#00DDF2] tracking-wider uppercase block">
                   Estado Selecionado
                 </span>
                 <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                  <span>{currentState.name}</span>
-                  <span className="px-2 py-0.5 text-xs font-mono-numbers bg-[#16264C] text-[#00DDF2] rounded">
-                    {currentState.uf}
+                  <span>{currentStateVector.name}</span>
+                  <span className="px-2 py-0.5 text-xs font-mono-numbers bg-[#16264C] text-[#00DDF2] rounded border border-[#00DDF2]/30">
+                    {currentStateVector.uf}
                   </span>
                 </h2>
+                <span className="text-xs text-slate-400">Região {currentStateVector.region}</span>
               </div>
+
               <div className="text-right">
                 <span className="text-[10px] text-slate-400 block">Score Médio</span>
                 <span className="text-xl font-bold font-mono-numbers text-white">
                   {regionalSummary.avg}
-                  <span className="text-xs text-slate-400 font-normal">/100</span>
+                  {regionalSummary.count > 0 && (
+                    <span className="text-xs text-slate-400 font-normal">/100</span>
+                  )}
                 </span>
               </div>
             </div>
@@ -213,7 +179,7 @@ export const MapView: React.FC<MapViewProps> = ({
             {/* 4 Metric counters */}
             <div className="grid grid-cols-2 gap-2 text-xs">
               <div className="p-3 rounded-lg bg-[#050B1E] border border-[#16264C]">
-                <span className="text-slate-400 block text-[11px]">Municípios Analisados</span>
+                <span className="text-slate-400 block text-[11px]">Municípios no MVP</span>
                 <span className="text-base font-bold text-white font-mono-numbers">
                   {regionalSummary.count}
                 </span>
@@ -240,14 +206,25 @@ export const MapView: React.FC<MapViewProps> = ({
           </div>
 
           {/* Top Oportunidades da Região */}
-          <div className="p-5 rounded-xl bg-[#0A1329] border border-[#16264C] space-y-3">
-            <h3 className="text-xs font-bold text-white uppercase tracking-wider">
-              Top Oportunidades em {currentState.name}
-            </h3>
+          <div className="p-5 rounded-2xl bg-[#0A1329] border border-[#16264C] space-y-3 shadow-lg">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xs font-bold text-white uppercase tracking-wider">
+                Top Oportunidades em {currentStateVector.name}
+              </h3>
+              <span className="text-[11px] text-slate-400 font-mono">
+                {stateMunicipalities.length} cadastrado{stateMunicipalities.length > 1 ? 's' : ''}
+              </span>
+            </div>
 
             {stateMunicipalities.length === 0 ? (
-              <div className="py-8 text-center text-xs text-slate-400">
-                Nenhum município demonstrativo cadastrado para esta UF.
+              <div className="py-10 text-center text-xs text-slate-400 border border-dashed border-[#16264C] rounded-xl p-4">
+                <Info className="w-5 h-5 text-slate-400 mx-auto mb-1.5 opacity-60" />
+                <p className="font-medium text-slate-300">
+                  Nenhum município demonstrativo alocado para {currentStateVector.name} ({currentStateVector.uf}) nesta amostra.
+                </p>
+                <p className="text-[11px] text-slate-400 mt-1">
+                  Selecione outro estado no mapa (ex: PA, SP, MG, PR, BA, CE, GO, PE, RS, AM) para analisar municípios simulados.
+                </p>
               </div>
             ) : (
               <div className="space-y-2">
