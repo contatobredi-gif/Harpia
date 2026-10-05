@@ -12,6 +12,7 @@ import {
   Info,
 } from 'lucide-react';
 import { Municipality, PipelineStage } from '../types';
+import { ContextualHelp } from '../components/ContextualHelp';
 
 interface OpportunitiesKanbanProps {
   municipalities: Municipality[];
@@ -73,9 +74,15 @@ export const OpportunitiesKanban: React.FC<OpportunitiesKanbanProps> = ({
       {/* Title & Pipeline Subtitle */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-            Pipeline de Oportunidades Educacionais
-          </h1>
+          <div className="flex items-center">
+            <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+              Pipeline de Oportunidades Educacionais
+            </h1>
+            <ContextualHelp
+              topic="Pipeline B2G"
+              explanation="Organiza os municípios entre Abordagem Imediata (0-90 dias), Relacionamento & Planejamento (91-180 dias) e Monitoramento (181-365 dias). Mova cards entre colunas conforme sua evolução comercial."
+            />
+          </div>
           <p className="text-xs text-slate-400 mt-1 max-w-2xl leading-relaxed">
             Funil comercial B2G qualificado por inteligência de compras públicas. Arraste ou mova municípios entre estágios de prospecção.
           </p>
@@ -88,7 +95,7 @@ export const OpportunitiesKanban: React.FC<OpportunitiesKanbanProps> = ({
       </div>
 
       {/* 3 Kanban Columns */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 items-start">
+      <div id="pipeline-kanban-board" className="grid grid-cols-1 lg:grid-cols-3 gap-5 items-start">
         {COLUMNS.map((col) => {
           const Icon = col.icon;
           const itemsInCol = municipalities.filter((m) => m.pipelineStage === col.id);
@@ -96,6 +103,7 @@ export const OpportunitiesKanban: React.FC<OpportunitiesKanbanProps> = ({
           return (
             <div
               key={col.id}
+              id={col.id === 'A_IMEDIATA' ? 'pipeline-column-imediata' : undefined}
               className={`rounded-2xl bg-[#0A1329] border ${col.borderColor} p-4 flex flex-col min-h-[580px] shadow-lg`}
             >
               {/* Column Header */}

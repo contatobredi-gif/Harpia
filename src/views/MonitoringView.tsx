@@ -13,6 +13,7 @@ import {
   Plus,
 } from 'lucide-react';
 import { Municipality, TimelineEvent } from '../types';
+import { ContextualHelp } from '../components/ContextualHelp';
 
 interface MonitoringViewProps {
   municipalities: Municipality[];
@@ -55,13 +56,17 @@ export const MonitoringView: React.FC<MonitoringViewProps> = ({
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Watchlist Table (8 cols) */}
-        <div className="lg:col-span-8 p-5 rounded-xl bg-[#0A1329] border border-[#16264C] space-y-4">
+        <div id="monitoring-watchlist-area" className="lg:col-span-8 p-5 rounded-xl bg-[#0A1329] border border-[#16264C] space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <BookmarkCheck className="w-4 h-4 text-[#00DDF2]" />
               <h2 className="text-xs font-bold text-white uppercase tracking-wider">
                 Municípios Acompanhados ({monitoredList.length})
               </h2>
+              <ContextualHelp
+                topic="Watchlist de Monitoramento"
+                explanation="Lista de municípios selecionados para acompanhamento contínuo de movimentações orçamentárias, editais no PNCP e recálculos periódicos do Score Harpia."
+              />
             </div>
             <span className="text-[11px] text-slate-400">Alertas automáticos habilitados</span>
           </div>

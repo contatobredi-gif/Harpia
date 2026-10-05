@@ -14,6 +14,7 @@ import {
   Info,
 } from 'lucide-react';
 import { Municipality, Region, ContractingWindow, PriorityLevel, ConfidenceLevel } from '../types';
+import { ContextualHelp } from '../components/ContextualHelp';
 
 interface RadarViewProps {
   municipalities: Municipality[];
@@ -202,6 +203,31 @@ export const RadarView: React.FC<RadarViewProps> = ({
 
         <div className="flex items-center gap-2 self-start sm:self-center">
           <button
+            id="radar-export-btn"
+            onClick={() => {
+              const headers = 'Município,UF,Região,Score,Fiscal,Educação,Contratação,Acesso,Governança,Janela,Confiança,Status\n';
+              const rows = filteredList
+                .map(
+                  (m) =>
+                    `"${m.nome}","${m.uf}","${m.regiao}",${m.score.total},${m.score.fiscal},${m.score.educacao},${m.score.contratacao},${m.score.acesso},${m.score.governanca},"${m.janela}","${m.confianca}","${m.status}"`
+                )
+                .join('\n');
+              const blob = new Blob([headers + rows], { type: 'text/csv;charset=utf-8;' });
+              const url = URL.createObjectURL(blob);
+              const link = document.createElement('a');
+              link.setAttribute('href', url);
+              link.setAttribute('download', 'harpia_tech_municipios.csv');
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#0F1C3C] border border-[#16264C] hover:border-[#00DDF2]/50 text-xs font-semibold text-slate-300 hover:text-white transition-colors"
+          >
+            <Download className="w-3.5 h-3.5 text-[#00DDF2]" />
+            <span>Exportar CSV</span>
+          </button>
+
+          <button
             onClick={handleSaveFilter}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#0A1329] border border-[#16264C] hover:border-[#00DDF2]/50 text-xs font-medium text-slate-300 transition-colors"
           >
@@ -225,7 +251,7 @@ export const RadarView: React.FC<RadarViewProps> = ({
       </div>
 
       {/* Multi-Filters Panel */}
-      <div className="p-4 rounded-xl bg-[#0A1329] border border-[#16264C] space-y-3">
+      <div id="radar-filters-bar" className="p-4 rounded-xl bg-[#0A1329] border border-[#16264C] space-y-3">
         <div className="flex items-center gap-2 text-xs font-semibold text-slate-300">
           <Filter className="w-3.5 h-3.5 text-[#00DDF2]" />
           <span>Filtros Analíticos Avançados</span>
@@ -236,6 +262,7 @@ export const RadarView: React.FC<RadarViewProps> = ({
           <div className="relative">
             <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
             <input
+              id="radar-search-input"
               type="text"
               value={search}
               onChange={(e) => {
@@ -361,7 +388,7 @@ export const RadarView: React.FC<RadarViewProps> = ({
       </div>
 
       {/* Analytical Table */}
-      <div className="p-5 rounded-xl bg-[#0A1329] border border-[#16264C] space-y-4">
+      <div id="radar-table-container" className="p-5 rounded-xl bg-[#0A1329] border border-[#16264C] space-y-4">
         <div className="flex items-center justify-between">
           <div className="text-xs text-slate-400">
             Exibindo <span className="font-semibold text-white">{filteredList.length}</span> de {municipalities.length} municípios demonstrativos
@@ -396,6 +423,10 @@ export const RadarView: React.FC<RadarViewProps> = ({
                 >
                   <div className="flex items-center justify-center gap-1">
                     <span>Score</span>
+                    <ContextualHelp
+                      topic="Score Harpia"
+                      explanation="Pontuação ponderada de 0 a 100 baseada nas 5 dimensões oficiais: Fiscal (30), Educação (25), Contratação (25), Acesso (10) e Governança (10)."
+                    />
                     <ArrowUpDown className="w-3 h-3 text-[#00DDF2]" />
                   </div>
                 </th>
@@ -433,13 +464,25 @@ export const RadarView: React.FC<RadarViewProps> = ({
                   onClick={() => handleSort('janela')}
                   className="py-3 px-3 font-semibold cursor-pointer hover:text-white transition-colors"
                 >
-                  Janela
+                  <div className="flex items-center gap-1">
+                    <span>Janela</span>
+                    <ContextualHelp
+                      topic="Janela de Contratação"
+                      explanation="Estimativa temporal recomendada para abordagem: Imediata (0-90 dias), Próxima (91-180 dias) e Estratégica (181-365 dias)."
+                    />
+                  </div>
                 </th>
                 <th
                   onClick={() => handleSort('confianca')}
                   className="py-3 px-3 font-semibold text-center cursor-pointer hover:text-white transition-colors"
                 >
-                  Confiança
+                  <div className="flex items-center justify-center gap-1">
+                    <span>Confiança</span>
+                    <ContextualHelp
+                      topic="Nível de Confiança"
+                      explanation="Grau de consistência e completude dos registros públicos consultados para este município demonstrativo."
+                    />
+                  </div>
                 </th>
                 <th
                   onClick={() => handleSort('prioridade')}

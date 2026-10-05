@@ -8,13 +8,19 @@ import {
   RotateCcw,
   Check,
   Info,
+  Compass,
+  ArrowRight,
 } from 'lucide-react';
 
 interface SettingsViewProps {
   onResetData: () => void;
+  onRestartTour?: () => void;
 }
 
-export const SettingsView: React.FC<SettingsViewProps> = ({ onResetData }) => {
+export const SettingsView: React.FC<SettingsViewProps> = ({
+  onResetData,
+  onRestartTour,
+}) => {
   const [resetSuccess, setResetSuccess] = useState(false);
   const [savedSettings, setSavedSettings] = useState(false);
 
@@ -216,7 +222,43 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onResetData }) => {
         </div>
       </div>
 
-      {/* 4. Reset de Dados Demonstrativos (localStorage) */}
+      {/* 4. Tutorial da Plataforma (Onboarding) */}
+      <div className="p-5 rounded-xl bg-[#0A1329] border border-[#00DDF2]/30 space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Compass className="w-4 h-4 text-[#00DDF2]" />
+            <h2 className="text-xs font-bold text-white uppercase tracking-wider">
+              Tutorial & Onboarding da Plataforma
+            </h2>
+          </div>
+          <span className="text-[10px] font-mono text-[#00DDF2] px-2 py-0.5 rounded bg-[#00DDF2]/10 border border-[#00DDF2]/30">
+            12 Etapas Interativas
+          </span>
+        </div>
+
+        <p className="text-xs text-slate-300 leading-relaxed">
+          Reveja o tour interativo passo a passo pelas principais telas da Harpia Tech: Visão Geral, Radar, filtros analíticos, Ficha Municipal, mapa vetorial, pipeline e copiloto de inteligência com IA.
+        </p>
+
+        <div className="pt-2 flex items-center justify-between">
+          <span className="text-[11px] text-slate-400">
+            O tour destaca elementos reais na tela e pode ser pausado ou reiniciado a qualquer momento.
+          </span>
+
+          {onRestartTour && (
+            <button
+              id="settings-tutorial-btn"
+              onClick={onRestartTour}
+              className="px-4 py-2 rounded-lg bg-[#00DDF2] text-[#050B1E] hover:bg-[#5beaff] font-bold text-xs transition-all shadow-[0_0_15px_rgba(0,221,242,0.2)] flex items-center gap-1.5 shrink-0"
+            >
+              <span>Tutorial da Plataforma</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* 5. Reset de Dados Demonstrativos (localStorage) */}
       <div className="p-5 rounded-xl bg-[#0A1329] border border-rose-500/20 space-y-3">
         <div className="flex items-center gap-2">
           <RotateCcw className="w-4 h-4 text-rose-400" />

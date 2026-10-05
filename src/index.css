@@ -42,3 +42,20 @@
   font-family: 'JetBrains Mono', monospace;
   font-variant-numeric: tabular-nums;
 }
+
+@keyframes tourPulseHighlight {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(0, 221, 242, 0.8);
+    outline: 2px solid #00DDF2;
+  }
+  50% {
+    box-shadow: 0 0 20px 6px rgba(0, 221, 242, 0.4);
+    outline: 3px solid #5beaff;
+  }
+}
+
+.tour-pulse-highlight {
+  animation: tourPulseHighlight 1s ease-in-out 3;
+  z-index: 40 !important;
+  position: relative;
+}

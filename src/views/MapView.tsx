@@ -102,7 +102,7 @@ export const MapView: React.FC<MapViewProps> = ({
           </div>
 
           {/* Real Vector Brazil Map Canvas */}
-          <div className="p-5 rounded-2xl bg-[#0A1329] border border-[#16264C] relative flex flex-col justify-between overflow-hidden shadow-xl">
+          <div id="map-vector-container" className="p-5 rounded-2xl bg-[#0A1329] border border-[#16264C] relative flex flex-col justify-between overflow-hidden shadow-xl">
             {/* Header info */}
             <div className="flex items-center justify-between text-[11px] text-slate-400 pb-2 border-b border-[#16264C]/60 mb-2">
               <span className="flex items-center gap-1.5 font-mono">

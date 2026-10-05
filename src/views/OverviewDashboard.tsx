@@ -12,6 +12,7 @@ import {
   MapPin,
 } from 'lucide-react';
 import { Municipality } from '../types';
+import { ContextualHelp } from '../components/ContextualHelp';
 
 interface OverviewDashboardProps {
   municipalities: Municipality[];
@@ -51,7 +52,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
       {/* ===================================================
           1. CARDS SUPERIORES
          =================================================== */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+      <div id="dashboard-overview-cards" className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
         {/* Card 1: Municípios monitorados */}
         <div className="p-4 rounded-xl bg-[#0A1329] border border-[#16264C] flex flex-col justify-between">
           <div className="flex items-center justify-between text-xs text-slate-400">
@@ -71,7 +72,13 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
         {/* Card 2: Oportunidades imediatas */}
         <div className="p-4 rounded-xl bg-[#0A1329] border border-[#16264C] flex flex-col justify-between">
           <div className="flex items-center justify-between text-xs text-slate-400">
-            <span className="truncate">Oportunidades imediatas</span>
+            <div className="flex items-center">
+              <span className="truncate">Oportunidades imediatas</span>
+              <ContextualHelp
+                topic="Janela Imediata (0-90 dias)"
+                explanation="Contratos vigentes prestes a encerrar ou itens já previstos no Plano de Contratações Anual (PCA) que exigem abordagem comercial prioritária."
+              />
+            </div>
             <Zap className="w-4 h-4 text-emerald-400 shrink-0" />
           </div>
           <div className="my-2">
@@ -104,7 +111,13 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
         {/* Card 4: Em monitoramento */}
         <div className="p-4 rounded-xl bg-[#0A1329] border border-[#16264C] flex flex-col justify-between">
           <div className="flex items-center justify-between text-xs text-slate-400">
-            <span className="truncate">Em monitoramento</span>
+            <div className="flex items-center">
+              <span className="truncate">Em monitoramento</span>
+              <ContextualHelp
+                topic="Monitoramento"
+                explanation="Sua lista de acompanhamento (watchlist) de prefeituras prioritárias para rastrear movimentações e sinais públicos."
+              />
+            </div>
             <BookmarkCheck className="w-4 h-4 text-slate-400 shrink-0" />
           </div>
           <div className="my-2">
@@ -118,10 +131,16 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
         </div>
 
         {/* Card 5: Score médio */}
-        <div className="p-4 rounded-xl bg-[#0A1329] border border-[#16264C] flex flex-col justify-between">
+        <div id="dashboard-score-card" className="p-4 rounded-xl bg-[#0A1329] border border-[#00DDF2]/30 flex flex-col justify-between shadow-[0_0_15px_rgba(0,221,242,0.06)]">
           <div className="flex items-center justify-between text-xs text-slate-400">
-            <span className="truncate">Score médio</span>
-            <Award className="w-4 h-4 text-slate-400 shrink-0" />
+            <div className="flex items-center">
+              <span className="truncate">Score médio</span>
+              <ContextualHelp
+                topic="Score Harpia"
+                explanation="O Score Harpia varia de 0 a 100 e combina capacidade fiscal (30 pts), necessidade educacional (25 pts), oportunidade de contratação (25 pts), acesso institucional (10 pts) e governança (10 pts)."
+              />
+            </div>
+            <Award className="w-4 h-4 text-[#00DDF2] shrink-0" />
           </div>
           <div className="my-2 flex items-baseline gap-1">
             <span className="text-2xl font-extrabold text-white font-mono-numbers">

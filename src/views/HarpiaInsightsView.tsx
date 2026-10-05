@@ -109,7 +109,7 @@ export const HarpiaInsightsView: React.FC<HarpiaInsightsViewProps> = ({
       </div>
 
       {/* Chatbot-style Question Input & Suggestions */}
-      <div className="p-5 rounded-2xl bg-[#0A1329] border border-[#16264C] space-y-4 shadow-xl">
+      <div id="insights-input-form" className="p-5 rounded-2xl bg-[#0A1329] border border-[#16264C] space-y-4 shadow-xl">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-xs font-bold text-white uppercase tracking-wider">
             <HelpCircle className="w-4 h-4 text-[#00DDF2]" />

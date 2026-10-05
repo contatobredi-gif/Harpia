@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Search, Bell, Sparkles, RefreshCw, Info } from 'lucide-react';
+import { Search, Bell, Sparkles, RefreshCw, Info, HelpCircle } from 'lucide-react';
 import { NavTab } from './Sidebar';
 
 interface HeaderProps {
   currentTab: NavTab;
   onOpenSearch: () => void;
+  onOpenHelp: () => void;
   onOpenNotifications: () => void;
   unreadNotificationsCount: number;
   onOpenInsights: () => void;
@@ -25,6 +26,7 @@ const TAB_TITLES: Record<NavTab, { section: string; title: string }> = {
 export const Header: React.FC<HeaderProps> = ({
   currentTab,
   onOpenSearch,
+  onOpenHelp,
   onOpenNotifications,
   unreadNotificationsCount,
   onOpenInsights,
@@ -80,8 +82,18 @@ export const Header: React.FC<HeaderProps> = ({
         </button>
       </div>
 
-      {/* Zone 3: Actions & Notifications */}
-      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+      {/* Zone 3: Actions & Notifications (Search | Help (?) | Ask Harpia | Notifications) */}
+      <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
+        {/* Help button */}
+        <button
+          onClick={onOpenHelp}
+          title="Central de Ajuda Harpia"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[#0F1C3C] hover:bg-[#16264C] border border-[#16264C] hover:border-[#00DDF2]/50 text-slate-300 hover:text-[#00DDF2] text-xs font-semibold transition-all group"
+        >
+          <HelpCircle className="w-4 h-4 text-[#00DDF2] group-hover:scale-110 transition-transform" />
+          <span className="hidden sm:inline">AJUDA</span>
+        </button>
+
         {onRefreshData && (
           <button
             onClick={onRefreshData}

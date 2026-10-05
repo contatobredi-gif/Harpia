@@ -24,6 +24,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { Municipality } from '../types';
+import { ContextualHelp } from './ContextualHelp';
 
 interface MunicipalityDetailModalProps {
   municipality: Municipality | null;
@@ -101,7 +102,7 @@ export const MunicipalityDetailModal: React.FC<MunicipalityDetailModalProps> = (
         {/* ===================================================
             1. TOP SECTION — POLISHED HIERARCHY
            =================================================== */}
-        <div className="p-5 sm:p-6 bg-[#0A1329] border-b border-[#16264C] flex flex-col gap-5">
+        <div id="modal-municipality-header" className="p-5 sm:p-6 bg-[#0A1329] border-b border-[#16264C] flex flex-col gap-5">
           {/* Header Row: Identity, Priority, Window, Actions */}
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
             <div className="flex items-start gap-3.5">
@@ -138,11 +139,19 @@ export const MunicipalityDetailModal: React.FC<MunicipalityDetailModalProps> = (
                   <span className="flex items-center gap-1 font-medium">
                     <Clock className="w-3.5 h-3.5 text-[#00DDF2]" />
                     Janela: <strong className="text-white font-mono-numbers">{municipality.janela}</strong>
+                    <ContextualHelp
+                      topic="Janela de Contratação"
+                      explanation="Prazo estimado para o município abrir novos certames ou renovar contratos vigentes de soluções educacionais."
+                    />
                   </span>
                   <span className="text-slate-400">·</span>
                   <span className="flex items-center gap-1">
                     <span className="w-2 h-2 rounded-full bg-emerald-400" />
                     Confiança <strong className="text-white">{municipality.confianca}</strong>
+                    <ContextualHelp
+                      topic="Confiança dos Dados"
+                      explanation="Nível de auditoria e validação das bases públicas oficiais (Siconfi, PNCP, INEP) disponíveis para este município."
+                    />
                   </span>
                   <span className="text-slate-400">·</span>
                   <span className="flex items-center gap-1 text-slate-400">
@@ -237,7 +246,7 @@ export const MunicipalityDetailModal: React.FC<MunicipalityDetailModalProps> = (
             </div>
 
             {/* Five Dimensions Cards (9 cols, 5 equal items) */}
-            <div className="lg:col-span-9 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-2.5">
+            <div id="modal-five-dimensions" className="lg:col-span-9 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-2.5">
               {/* 1. Fiscal (30 pts max) */}
               <div className="p-3.5 rounded-xl bg-[#050B1E] border border-[#16264C] flex flex-col justify-between">
                 <div>
@@ -412,7 +421,7 @@ export const MunicipalityDetailModal: React.FC<MunicipalityDetailModalProps> = (
               </div>
 
               {/* 3 BLOCKS: SINAIS FAVORÁVEIS, CAUTELAS, PRÓXIMA AÇÃO */}
-              <div className="space-y-4">
+              <div id="modal-overview-analysis" className="space-y-4">
                 {/* Row: Sinais Favoráveis e Cautelas */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Bloco 1: Sinais favoráveis */}

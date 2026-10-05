@@ -9,8 +9,12 @@ import { Header } from './components/Header';
 import { GlobalSearchModal } from './components/GlobalSearchModal';
 import { NotificationsDrawer } from './components/NotificationsDrawer';
 import { MunicipalityDetailModal } from './components/MunicipalityDetailModal';
+import { HelpDrawer } from './components/HelpDrawer';
+import { GuidedTour } from './components/GuidedTour';
 
 // Views
+import { LandingPageView } from './views/LandingPageView';
+import { LoginView } from './views/LoginView';
 import { OverviewDashboard } from './views/OverviewDashboard';
 import { RadarView } from './views/RadarView';
 import { MapView } from './views/MapView';
@@ -23,7 +27,6 @@ import { SettingsView } from './views/SettingsView';
 // Services & Types
 import {
   getStoredMunicipalities,
-  saveStoredMunicipalities,
   toggleMunicipalityMonitoring,
   updateMunicipalityPipelineStage,
   getStoredNotifications,
@@ -33,8 +36,40 @@ import {
 } from './services/storage';
 import { Municipality, NotificationItem, TimelineEvent, PipelineStage } from './types';
 
+// Tab to route path mapping
+const TAB_TO_PATH: Record<NavTab, string> = {
+  'visao-geral': '/app',
+  radar: '/app/radar',
+  mapa: '/app/mapa',
+  oportunidades: '/app/oportunidades',
+  monitoramento: '/app/monitoramento',
+  insights: '/app/insights',
+  fontes: '/app/fontes',
+  configuracoes: '/app/configuracoes',
+};
+
+// Route path to Tab mapping
+function getTabFromPath(path: string): NavTab {
+  if (path === '/app/radar') return 'radar';
+  if (path === '/app/mapa') return 'mapa';
+  if (path === '/app/oportunidades') return 'oportunidades';
+  if (path === '/app/monitoramento') return 'monitoramento';
+  if (path === '/app/insights') return 'insights';
+  if (path === '/app/fontes') return 'fontes';
+  if (path === '/app/configuracoes') return 'configuracoes';
+  return 'visao-geral';
+}
+
 export default function App() {
-  const [currentTab, setCurrentTab] = useState<NavTab>('visao-geral');
+  // Routing state
+  const [currentPath, setCurrentPath] = useState<string>(() => {
+    return window.location.pathname || '/';
+  });
+
+  const [currentTab, setCurrentTab] = useState<NavTab>(() => {
+    return getTabFromPath(window.location.pathname);
+  });
+
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   // Core Data in localStorage
@@ -44,17 +79,42 @@ export default function App() {
 
   // Modals & Drawers
   const [searchModalOpen, setSearchModalOpen] = useState(false);
+  const [helpDrawerOpen, setHelpDrawerOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [selectedMunicipality, setSelectedMunicipality] = useState<Municipality | null>(null);
+
+  // Onboarding Guided Tour
+  const [tourActive, setTourActive] = useState(false);
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
 
   // Sync / Refresh toast
   const [refreshToast, setRefreshToast] = useState(false);
 
-  // Initialize data from localStorage on mount
+  // Browser navigation popstate listener
+  useEffect(() => {
+    const handlePopState = () => {
+      const path = window.location.pathname || '/';
+      setCurrentPath(path);
+      if (path.startsWith('/app')) {
+        setCurrentTab(getTabFromPath(path));
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  // Initialize data from localStorage on mount & check first access
   useEffect(() => {
     setMunicipalities(getStoredMunicipalities());
     setNotifications(getStoredNotifications());
     setTimelineEvents(getStoredTimeline());
+
+    // Check if user on platform for the first time
+    const tourDone = localStorage.getItem('harpia_tour_completed');
+    if (!tourDone && window.location.pathname.startsWith('/app')) {
+      setShowWelcomeModal(true);
+    }
   }, []);
 
   // Global keyboard shortcuts (⌘K for search)
@@ -68,6 +128,28 @@ export default function App() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
+
+  // Clean Navigation function
+  const navigate = (newPath: string) => {
+    if (newPath !== window.location.pathname) {
+      window.history.pushState(null, '', newPath);
+    }
+    setCurrentPath(newPath);
+    if (newPath.startsWith('/app')) {
+      setCurrentTab(getTabFromPath(newPath));
+
+      // Trigger welcome tour on first access to /app
+      const tourDone = localStorage.getItem('harpia_tour_completed');
+      if (!tourDone) {
+        setShowWelcomeModal(true);
+      }
+    }
+  };
+
+  const handleSelectTab = (tab: NavTab) => {
+    setCurrentTab(tab);
+    navigate(TAB_TO_PATH[tab] || '/app');
+  };
 
   // Actions
   const handleToggleMonitoring = (id: string) => {
@@ -116,15 +198,105 @@ export default function App() {
     setTimeout(() => setRefreshToast(false), 2000);
   };
 
+  // Tour controls
+  const handleStartTourFromWelcome = () => {
+    setShowWelcomeModal(false);
+    setTourActive(true);
+  };
+
+  const handleDismissWelcomeModal = () => {
+    setShowWelcomeModal(false);
+    localStorage.setItem('harpia_tour_completed', 'true');
+  };
+
+  const handleFinishTour = () => {
+    setTourActive(false);
+    localStorage.setItem('harpia_tour_completed', 'true');
+  };
+
+  const handleRestartTour = () => {
+    if (!currentPath.startsWith('/app')) {
+      navigate('/app');
+    }
+    setTourActive(true);
+    setShowWelcomeModal(false);
+  };
+
+  const handleOpenDemoMunicipality = () => {
+    const demo = municipalities.find((m) => m.id === 'mun-alfa') || municipalities[0] || null;
+    setSelectedMunicipality(demo);
+  };
+
+  const handleCloseDemoMunicipality = () => {
+    setSelectedMunicipality(null);
+  };
+
+  // Contextual "ME MOSTRE COMO" handler
+  const handleShowHowTo = (actionTarget: string, highlightId?: string) => {
+    setHelpDrawerOpen(false);
+
+    if (actionTarget === 'ficha') {
+      handleOpenDemoMunicipality();
+    } else {
+      const tabMap: Record<string, NavTab> = {
+        radar: 'radar',
+        mapa: 'mapa',
+        oportunidades: 'oportunidades',
+        monitoramento: 'monitoramento',
+        insights: 'insights',
+        fontes: 'fontes',
+        configuracoes: 'configuracoes',
+        'visao-geral': 'visao-geral',
+      };
+      if (tabMap[actionTarget]) {
+        handleSelectTab(tabMap[actionTarget]);
+      }
+    }
+
+    if (highlightId) {
+      setTimeout(() => {
+        const el = document.getElementById(highlightId);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          el.classList.add('tour-pulse-highlight');
+          setTimeout(() => {
+            el.classList.remove('tour-pulse-highlight');
+          }, 3500);
+        }
+      }, 300);
+    }
+  };
+
   const unreadNotificationsCount = notifications.filter((n) => !n.lida).length;
   const monitoredCount = municipalities.filter((m) => m.isMonitored).length;
 
+  // ROUTE 1: Commercial Landing Page (/)
+  if (currentPath === '/') {
+    return (
+      <LandingPageView
+        onNavigateLogin={() => navigate('/login')}
+        onNavigateApp={() => navigate('/app')}
+      />
+    );
+  }
+
+  // ROUTE 2: Login Screen (/login)
+  if (currentPath === '/login') {
+    return (
+      <LoginView
+        onLoginSuccess={() => navigate('/app')}
+        onNavigateHome={() => navigate('/')}
+      />
+    );
+  }
+
+  // ROUTE 3: SaaS Platform (/app and subroutes)
   return (
     <div className="min-h-screen bg-[#050B1E] text-slate-100 flex">
       {/* 1. Fixed Left Sidebar */}
       <Sidebar
         currentTab={currentTab}
-        onSelectTab={setCurrentTab}
+        onSelectTab={handleSelectTab}
         collapsed={sidebarCollapsed}
         onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
         monitoredCount={monitoredCount}
@@ -140,9 +312,10 @@ export default function App() {
         <Header
           currentTab={currentTab}
           onOpenSearch={() => setSearchModalOpen(true)}
+          onOpenHelp={() => setHelpDrawerOpen(true)}
           onOpenNotifications={() => setNotificationsOpen(true)}
           unreadNotificationsCount={unreadNotificationsCount}
-          onOpenInsights={() => setCurrentTab('insights')}
+          onOpenInsights={() => handleSelectTab('insights')}
           onRefreshData={handleRefresh}
         />
 
@@ -160,8 +333,8 @@ export default function App() {
             <OverviewDashboard
               municipalities={municipalities}
               onSelectMunicipality={setSelectedMunicipality}
-              onNavigateToRadar={() => setCurrentTab('radar')}
-              onNavigateToMap={() => setCurrentTab('mapa')}
+              onNavigateToRadar={() => handleSelectTab('radar')}
+              onNavigateToMap={() => handleSelectTab('mapa')}
             />
           )}
 
@@ -194,7 +367,7 @@ export default function App() {
               timelineEvents={timelineEvents}
               onSelectMunicipality={setSelectedMunicipality}
               onToggleMonitoring={handleToggleMonitoring}
-              onNavigateToRadar={() => setCurrentTab('radar')}
+              onNavigateToRadar={() => handleSelectTab('radar')}
             />
           )}
 
@@ -208,7 +381,10 @@ export default function App() {
           {currentTab === 'fontes' && <SourcesView />}
 
           {currentTab === 'configuracoes' && (
-            <SettingsView onResetData={handleResetData} />
+            <SettingsView
+              onResetData={handleResetData}
+              onRestartTour={handleRestartTour}
+            />
           )}
         </main>
       </div>
@@ -219,7 +395,16 @@ export default function App() {
         onClose={() => setSearchModalOpen(false)}
         municipalities={municipalities}
         onSelectMunicipality={setSelectedMunicipality}
-        onNavigateToInsights={() => setCurrentTab('insights')}
+        onNavigateToInsights={() => handleSelectTab('insights')}
+      />
+
+      {/* Intelligent Help Center Drawer */}
+      <HelpDrawer
+        isOpen={helpDrawerOpen}
+        onClose={() => setHelpDrawerOpen(false)}
+        onNavigate={handleSelectTab}
+        onRestartTour={handleRestartTour}
+        onShowHowTo={handleShowHowTo}
       />
 
       {/* Notifications Drawer */}
@@ -237,6 +422,18 @@ export default function App() {
         onClose={() => setSelectedMunicipality(null)}
         onToggleMonitoring={handleToggleMonitoring}
         onChangePipelineStage={handleMovePipelineStage}
+      />
+
+      {/* Interactive Guided Onboarding Tour & Welcome Modal */}
+      <GuidedTour
+        isActive={tourActive}
+        onFinishTour={handleFinishTour}
+        onNavigateTab={handleSelectTab}
+        onOpenDemoMunicipality={handleOpenDemoMunicipality}
+        onCloseDemoMunicipality={handleCloseDemoMunicipality}
+        showWelcomeModal={showWelcomeModal}
+        onStartTourFromWelcome={handleStartTourFromWelcome}
+        onDismissWelcomeModal={handleDismissWelcomeModal}
       />
     </div>
   );
