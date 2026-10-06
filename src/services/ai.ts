@@ -33,6 +33,10 @@ export async function askHarpiaAi(
     janela: m.janela,
     isMonitored: m.isMonitored,
     confianca: m.confianca,
+    principalSinal: m.principalSinal,
+    motivoPrincipal: m.motivoPrincipal,
+    melhorMomento: m.melhorMomento,
+    canalSugeridoPrimeiroContato: m.canalSugeridoPrimeiroContato,
     leituraHarpia: m.leituraHarpia,
     sinaisCompras: m.compras.sinaisContribuiram,
     historicoCompras: m.compras.historico.map((h) => ({

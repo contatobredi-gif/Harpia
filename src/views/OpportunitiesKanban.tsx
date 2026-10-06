@@ -161,10 +161,21 @@ export const OpportunitiesKanban: React.FC<OpportunitiesKanbanProps> = ({
                         </div>
                       </div>
 
-                      {/* Brief rationale */}
-                      <p className="text-[11px] text-slate-300 line-clamp-2 leading-relaxed">
-                        {m.leituraHarpia.resumo}
-                      </p>
+                      {/* Commercial Decision Highlights */}
+                      <div className="space-y-1.5 text-[11px]">
+                        <div className="text-slate-300 flex items-start gap-1.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1 shrink-0" />
+                          <span className="line-clamp-2">
+                            <strong className="text-white">Sinal:</strong> {m.principalSinal || m.leituraHarpia.resumo}
+                          </span>
+                        </div>
+                        <div className="text-[#00DDF2] bg-[#0A1329] p-2 rounded-lg border border-[#16264C] flex items-start gap-1.5">
+                          <ArrowRight className="w-3 h-3 text-[#00DDF2] mt-0.5 shrink-0" />
+                          <span className="line-clamp-2 font-medium">
+                            <strong className="text-white">Ação:</strong> {m.leituraHarpia.proximaAcao}
+                          </span>
+                        </div>
+                      </div>
 
                       {/* Pill metrics */}
                       <div className="grid grid-cols-2 gap-2 text-[10px] pt-1 border-t border-[#16264C]/60 text-slate-400">

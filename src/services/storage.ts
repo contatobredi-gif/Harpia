@@ -15,7 +15,18 @@ export const getStoredMunicipalities = (): Municipality[] => {
       localStorage.setItem(STORAGE_KEYS.MUNICIPALITIES, JSON.stringify(INITIAL_MUNICIPALITIES));
       return INITIAL_MUNICIPALITIES;
     }
-    return JSON.parse(raw);
+    const parsed: Municipality[] = JSON.parse(raw);
+    // Ensure all modern commercial decision fields are present while preserving user modifications
+    return INITIAL_MUNICIPALITIES.map((initial) => {
+      const stored = parsed.find((m) => m.id === initial.id);
+      if (!stored) return initial;
+      return {
+        ...initial,
+        isMonitored: stored.isMonitored ?? initial.isMonitored,
+        pipelineStage: stored.pipelineStage ?? initial.pipelineStage,
+        notes: stored.notes ?? initial.notes,
+      };
+    });
   } catch (e) {
     console.error('Error reading municipalities from localStorage', e);
     return INITIAL_MUNICIPALITIES;

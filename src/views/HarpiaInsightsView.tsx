@@ -29,13 +29,13 @@ interface InsightAnswer extends InsightResponse {
 
 const PRESET_QUESTIONS = [
   'Quais municípios possuem janela nos próximos 90 dias?',
-  'Compare Município Alfa e Município Beta.',
-  'Qual município possui maior capacidade fiscal?',
-  'Quais municípios combinam alta necessidade educacional e boa capacidade financeira?',
-  'Por que Município Alfa está com prioridade alta?',
-  'Quais oportunidades possuem mais cautelas?',
-  'Quais municípios estão em monitoramento?',
-  'Quais municípios possuem score acima de 75?',
+  'Onde devo agir esta semana e qual a próxima ação recomendada?',
+  'Por que o Município Alfa é a principal prioridade comercial hoje?',
+  'Compare Município Alfa e Município Beta quanto à janela e sinais.',
+  'Qual município possui maior capacidade fiscal e dotação na LOA?',
+  'Quais municípios combinam alta necessidade educacional e orçamento aprovado?',
+  'Quais oportunidades possuem mais cautelas e exigem validação prévia?',
+  'Quais municípios estão em monitoramento aguardando aditivo ou novo edital?',
 ];
 
 function getPriorityColor(priority: string): string {

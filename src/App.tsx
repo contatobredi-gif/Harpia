@@ -85,6 +85,7 @@ export default function App() {
 
   // Onboarding Guided Tour
   const [tourActive, setTourActive] = useState(false);
+  const [tourInitialStep, setTourInitialStep] = useState<number>(0);
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
 
   // Sync / Refresh toast
@@ -110,10 +111,16 @@ export default function App() {
     setNotifications(getStoredNotifications());
     setTimelineEvents(getStoredTimeline());
 
-    // Check if user on platform for the first time
+    // Check if user on platform for the first time or resuming tour
     const tourDone = localStorage.getItem('harpia_tour_completed');
+    const lastStep = localStorage.getItem('harpia_tour_last_step');
     if (!tourDone && window.location.pathname.startsWith('/app')) {
-      setShowWelcomeModal(true);
+      if (lastStep && Number(lastStep) >= 1 && Number(lastStep) <= 8) {
+        setTourInitialStep(Number(lastStep) - 1);
+        setTourActive(true);
+      } else {
+        setShowWelcomeModal(true);
+      }
     }
   }, []);
 
@@ -218,6 +225,7 @@ export default function App() {
     if (!currentPath.startsWith('/app')) {
       navigate('/app');
     }
+    setTourInitialStep(0);
     setTourActive(true);
     setShowWelcomeModal(false);
   };
@@ -427,6 +435,7 @@ export default function App() {
       {/* Interactive Guided Onboarding Tour & Welcome Modal */}
       <GuidedTour
         isActive={tourActive}
+        initialStepIndex={tourInitialStep}
         onFinishTour={handleFinishTour}
         onNavigateTab={handleSelectTab}
         onOpenDemoMunicipality={handleOpenDemoMunicipality}

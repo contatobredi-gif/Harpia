@@ -500,22 +500,31 @@ export const RadarView: React.FC<RadarViewProps> = ({
                   onClick={() => onSelectMunicipality(item)}
                   className="hover:bg-[#0F1C3C]/60 transition-colors cursor-pointer group"
                 >
-                  <td className="py-3 px-3 font-medium text-white flex items-center gap-2">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onToggleMonitoring(item.id);
-                      }}
-                      title={item.isMonitored ? 'Remover da watchlist' : 'Adicionar à watchlist'}
-                      className="text-slate-500 hover:text-[#00DDF2] transition-colors p-0.5"
-                    >
-                      {item.isMonitored ? (
-                        <BookmarkCheck className="w-3.5 h-3.5 text-[#00DDF2]" />
-                      ) : (
-                        <Bookmark className="w-3.5 h-3.5" />
-                      )}
-                    </button>
-                    <span className="group-hover:text-[#00DDF2] transition-colors">{item.nome}</span>
+                  <td className="py-3 px-3 font-medium text-white">
+                    <div className="flex items-start gap-2">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onToggleMonitoring(item.id);
+                        }}
+                        title={item.isMonitored ? 'Remover da watchlist' : 'Adicionar à watchlist'}
+                        className="text-slate-500 hover:text-[#00DDF2] transition-colors p-0.5 mt-0.5"
+                      >
+                        {item.isMonitored ? (
+                          <BookmarkCheck className="w-3.5 h-3.5 text-[#00DDF2]" />
+                        ) : (
+                          <Bookmark className="w-3.5 h-3.5" />
+                        )}
+                      </button>
+                      <div className="min-w-0">
+                        <span className="group-hover:text-[#00DDF2] transition-colors font-bold block">
+                          {item.nome}
+                        </span>
+                        <span className="text-[10px] text-slate-400 block truncate max-w-[200px]" title={item.principalSinal}>
+                          {item.principalSinal || 'Sinal mapeado no PNCP'}
+                        </span>
+                      </div>
+                    </div>
                   </td>
                   <td className="py-3 px-3 font-mono-numbers text-slate-400">{item.uf}</td>
                   <td className="py-3 px-3 font-mono-numbers font-bold text-center text-white">
@@ -576,9 +585,14 @@ export const RadarView: React.FC<RadarViewProps> = ({
                     </span>
                   </td>
                   <td className="py-3 px-3 text-right">
-                    <span className="text-[11px] text-[#00DDF2] font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
-                      Abrir Ficha →
-                    </span>
+                    <div className="flex flex-col items-end">
+                      <span className="text-[11px] text-[#00DDF2] font-semibold group-hover:underline flex items-center gap-0.5">
+                        Abrir Ficha →
+                      </span>
+                      <span className="text-[9.5px] text-slate-400 truncate max-w-[150px]" title={item.leituraHarpia.proximaAcao}>
+                        {item.leituraHarpia.proximaAcao}
+                      </span>
+                    </div>
                   </td>
                 </tr>
               ))}

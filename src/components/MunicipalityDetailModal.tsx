@@ -22,9 +22,15 @@ import {
   Download,
   ShieldCheck,
   Zap,
+  Target,
+  Compass,
+  PhoneCall,
+  Activity,
+  Flame,
 } from 'lucide-react';
 import { Municipality } from '../types';
 import { ContextualHelp } from './ContextualHelp';
+import { getSignalsForMunicipio } from '../data/harpiaSignals';
 
 interface MunicipalityDetailModalProps {
   municipality: Municipality | null;
@@ -404,6 +410,166 @@ export const MunicipalityDetailModal: React.FC<MunicipalityDetailModalProps> = (
           {/* 1. VISÃO GERAL */}
           {activeTab === 'visao-geral' && (
             <div className="space-y-6">
+              {/* ===================================================
+                  QUADRO DE DECISÃO COMERCIAL B2G (4 PILARES)
+                 =================================================== */}
+              <div className="p-5 sm:p-6 rounded-2xl bg-[#0A1329] border border-[#00DDF2]/30 shadow-xl space-y-4">
+                <div className="flex items-center justify-between border-b border-[#16264C] pb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#00DDF2] animate-pulse" />
+                    <h2 className="text-xs sm:text-sm font-extrabold text-white tracking-wider uppercase flex items-center gap-1.5">
+                      <Target className="w-4 h-4 text-[#00DDF2]" />
+                      Quadro de Decisão Comercial B2G
+                    </h2>
+                  </div>
+                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#00DDF2]/10 text-[#00DDF2] border border-[#00DDF2]/20">
+                    DIRECIONAMENTO PRÁTICO
+                  </span>
+                </div>
+
+                {/* 4 Cards das 4 Perguntas Comerciais */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5">
+                  {/* 1. ONDE AGIR? */}
+                  <div className="p-4 rounded-xl bg-[#050B1E] border border-[#16264C] flex flex-col justify-between">
+                    <div>
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
+                        1. Onde Agir?
+                      </span>
+                      <h3 className="text-sm font-bold text-white flex items-center gap-1.5">
+                        <MapPin className="w-3.5 h-3.5 text-[#00DDF2]" />
+                        {municipality.nome} ({municipality.uf})
+                      </h3>
+                      <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                        Região {municipality.regiao} · {municipality.populacao.toLocaleString('pt-BR')} hab.
+                      </p>
+                    </div>
+                    <div className="mt-3 pt-2 border-t border-[#16264C]/70 text-[10.5px] text-slate-300">
+                      <strong>Rede:</strong> {municipality.educacao.escala.escolas} escolas municipais ({municipality.educacao.escala.matriculas.toLocaleString('pt-BR')} matrículas)
+                    </div>
+                  </div>
+
+                  {/* 2. POR QUE É UMA OPORTUNIDADE? */}
+                  <div className="p-4 rounded-xl bg-[#050B1E] border border-emerald-500/30 flex flex-col justify-between">
+                    <div>
+                      <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block mb-1">
+                        2. Por que é uma oportunidade?
+                      </span>
+                      <h3 className="text-xs font-bold text-white leading-snug">
+                        {municipality.principalSinal || 'Contrato semelhante próximo do encerramento'}
+                      </h3>
+                      <p className="text-[11px] text-slate-300 mt-1.5 leading-relaxed line-clamp-3">
+                        {municipality.motivoPrincipal || leituraHarpia.resumo}
+                      </p>
+                    </div>
+                    <div className="mt-3 pt-2 border-t border-[#16264C]/70 text-[10.5px] text-emerald-400 font-semibold flex items-center gap-1">
+                      <Flame className="w-3.5 h-3.5" />
+                      Score Harpia: {municipality.score.total} pts
+                    </div>
+                  </div>
+
+                  {/* 3. QUANDO ABORDAR? */}
+                  <div className="p-4 rounded-xl bg-[#050B1E] border border-[#00DDF2]/30 flex flex-col justify-between">
+                    <div>
+                      <span className="text-[10px] font-bold text-[#00DDF2] uppercase tracking-wider block mb-1">
+                        3. Quando Abordar?
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-3.5 h-3.5 text-[#00DDF2]" />
+                        <span className="text-xs font-bold text-white font-mono-numbers">
+                          {municipality.janela}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-300 mt-1.5 leading-relaxed">
+                        {municipality.melhorMomento || 'Janela estimada com base no encerramento do contrato vigente e ciclo da LOA.'}
+                      </p>
+                    </div>
+                    <div className="mt-3 pt-2 border-t border-[#16264C]/70 text-[10.5px] text-[#00DDF2]">
+                      <strong>Status:</strong> {municipality.prioridade}
+                    </div>
+                  </div>
+
+                  {/* 4. O QUE FAZER A SEGUIR? */}
+                  <div className="p-4 rounded-xl bg-[#050B1E] border border-indigo-500/30 flex flex-col justify-between">
+                    <div>
+                      <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-wider block mb-1">
+                        4. O que fazer a seguir?
+                      </span>
+                      <h3 className="text-xs font-bold text-white leading-snug">
+                        {leituraHarpia.proximaAcao}
+                      </h3>
+                      <p className="text-[11px] text-slate-300 mt-1.5 leading-relaxed">
+                        <strong className="text-indigo-300">Canal Sugerido:</strong>{' '}
+                        {municipality.canalSugeridoPrimeiroContato || 'Secretaria Municipal de Educação e Coordenação Pedagógica'}
+                      </p>
+                    </div>
+                    <div className="mt-3 pt-2 border-t border-[#16264C]/70 flex items-center justify-between text-[10.5px] text-slate-300">
+                      <span>Prospecção Técnica</span>
+                      <ArrowRight className="w-3 h-3 text-[#00DDF2]" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Sinais Harpia Históricos deste Município */}
+              {(() => {
+                const munSignals = getSignalsForMunicipio(municipality.id);
+                if (munSignals.length === 0) return null;
+
+                return (
+                  <div className="p-5 rounded-2xl bg-[#0A1329] border border-[#16264C] space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Activity className="w-4 h-4 text-[#00DDF2]" />
+                        <h3 className="text-xs font-bold text-white tracking-wider uppercase">
+                          Linha do Tempo de Sinais Harpia ({municipality.nome})
+                        </h3>
+                      </div>
+                      <span className="text-[10px] text-slate-400">
+                        {munSignals.length} eventos registrados
+                      </span>
+                    </div>
+
+                    <div className="space-y-2.5">
+                      {munSignals.map((sig) => (
+                        <div
+                          key={sig.id}
+                          className="p-3.5 rounded-xl bg-[#050B1E] border border-[#16264C] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
+                        >
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2">
+                              <span
+                                className={`px-2 py-0.2 rounded text-[10px] font-bold uppercase ${
+                                  sig.tipo === 'OPORTUNIDADE'
+                                    ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/20'
+                                    : sig.tipo === 'MUDANCA_PRIORIDADE'
+                                    ? 'bg-[#00DDF2]/15 text-[#00DDF2] border border-[#00DDF2]/20'
+                                    : sig.tipo === 'NOVA_PUBLICACAO'
+                                    ? 'bg-indigo-500/15 text-indigo-400 border border-indigo-500/20'
+                                    : 'bg-slate-800 text-slate-300'
+                                }`}
+                              >
+                                {sig.tipo.replace('_', ' ')}
+                              </span>
+                              <span className="text-[10px] text-slate-400">{sig.data}</span>
+                              <span className="text-[10px] text-slate-400">· Impacto {sig.impacto}</span>
+                            </div>
+                            <h4 className="font-bold text-white">{sig.titulo}</h4>
+                            <p className="text-[11px] text-slate-400 leading-snug">{sig.descricao}</p>
+                          </div>
+
+                          <div className="shrink-0 sm:text-right">
+                            <span className="text-[10px] text-slate-400 block">Ação Comercial:</span>
+                            <span className="text-[11px] font-semibold text-[#00DDF2]">
+                              {sig.acaoRecomendada}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
+
               {/* Leitura Harpia Summary Header */}
               <div className="p-5 rounded-2xl bg-[#0A1329] border border-[#16264C] space-y-3">
                 <div className="flex items-center justify-between">

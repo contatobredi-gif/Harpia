@@ -1,18 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
-  Sparkles,
   ChevronRight,
   ChevronLeft,
   X,
   Compass,
   CheckCircle2,
-  Zap,
-  Target,
-  Layers,
+  Sparkles,
   ArrowRight,
+  HelpCircle,
+  Check,
 } from 'lucide-react';
 import { NavTab } from './Sidebar';
-import { Municipality } from '../types';
 
 export interface TourStep {
   step: number;
@@ -22,7 +20,8 @@ export interface TourStep {
   targetTab: NavTab;
   openDemoMunicipality?: boolean;
   spotlightSelector?: string;
-  position?: 'bottom' | 'top' | 'center' | 'left' | 'right';
+  allowInteraction?: boolean;
+  isActionable?: boolean;
 }
 
 const TOUR_STEPS: TourStep[] = [
@@ -31,127 +30,81 @@ const TOUR_STEPS: TourStep[] = [
     title: 'Visão Geral & Indicadores',
     subtitle: 'Painel Executivo',
     content:
-      'Aqui você acompanha os principais indicadores da Harpia e visualiza rapidamente onde estão as melhores oportunidades comerciais no setor educacional público.',
+      'Acompanhe os principais indicadores consolidados e veja rapidamente onde estão as maiores concentrações de oportunidades no país.',
     targetTab: 'visao-geral',
     spotlightSelector: '#dashboard-overview-cards',
-    position: 'bottom',
   },
   {
     step: 2,
     title: 'Score Harpia (0 a 100)',
-    subtitle: 'Inteligência de Priorização',
+    subtitle: 'Critério de Priorização',
     content:
-      'O Score Harpia varia de 0 a 100 e combina capacidade fiscal, necessidade educacional, oportunidade de contratação, acesso institucional e governança.',
+      'Combina capacidade fiscal (30%), necessidade educacional (25%), oportunidade de contratação (25%), acesso institucional (10%) e governança (10%) para orientar a prioridade comercial.',
     targetTab: 'visao-geral',
     spotlightSelector: '#dashboard-score-card',
-    position: 'bottom',
   },
   {
     step: 3,
     title: 'Radar de Municípios',
-    subtitle: 'Mapeamento Avançado',
+    subtitle: 'Mapeamento Analítico',
     content:
-      'Use o Radar para localizar municípios, aplicar filtros dinâmicos e comparar oportunidades com base em indicadores oficiais do setor público.',
+      'Acesse a base completa de municípios, ordene por score, capacidade fiscal ou urgência pedagógica e selecione qualquer linha para abrir a Ficha Municipal.',
     targetTab: 'radar',
     spotlightSelector: '#radar-table-container',
-    position: 'top',
   },
   {
     step: 4,
-    title: 'Filtros Estratégicos',
-    subtitle: 'Segmentação Precisa',
+    title: 'Busca e Filtros',
+    subtitle: 'Segmentação Estratégica',
     content:
-      'Combine UF, região, score mínimo, janela de contratação, confiança e outros indicadores para encontrar oportunidades específicas para o seu portfólio.',
+      'Filtre por estado, macrorregião, janela de contratação ou digite o nome de um município para refinar sua prospecção.',
     targetTab: 'radar',
     spotlightSelector: '#radar-filters-bar',
-    position: 'bottom',
+    allowInteraction: true,
   },
   {
     step: 5,
-    title: 'Ficha Municipal Completa',
-    subtitle: 'Dossiê do Município',
+    title: 'Ficha Municipal',
+    subtitle: 'Dossiê Completo da Oportunidade',
     content:
-      'A Ficha Municipal concentra todos os sinais utilizados na análise da oportunidade, reunindo finanças, dados escolares, compras públicas e contatos institucionais.',
+      'Reúne histórico financeiro, indicadores de aprendizagem (IDEB e SAEB), contratos anteriores, canais institucionais e leitura estratégica da Harpia.',
     targetTab: 'radar',
     openDemoMunicipality: true,
     spotlightSelector: '#modal-municipality-header',
-    position: 'bottom',
   },
   {
     step: 6,
-    title: 'Cinco Dimensões do Score',
-    subtitle: 'Estrutura Analítica',
+    title: 'Pipeline & Monitoramento',
+    subtitle: 'Organização Comercial',
     content:
-      'Conheça a composição exata: Capacidade Fiscal (30 pts), Necessidade Educacional (25 pts), Oportunidade de Contratação (25 pts), Acesso Institucional (10 pts) e Governança (10 pts).',
-    targetTab: 'radar',
-    openDemoMunicipality: true,
-    spotlightSelector: '#modal-five-dimensions',
-    position: 'bottom',
+      'Estruture sua cadência comercial entre Abordagem Imediata (0–90 dias), Relacionamento (91–180 dias) e Monitoramento Estratégico.',
+    targetTab: 'oportunidades',
+    spotlightSelector: '#pipeline-kanban-board',
   },
   {
     step: 7,
-    title: 'Leitura Harpia & Evidências',
-    subtitle: 'Por trás dos números',
+    title: 'Harpia Insights',
+    subtitle: 'Copiloto Analítico com IA',
     content:
-      'A Harpia não mostra apenas uma nota. Ela explica os sinais que sustentam a oportunidade e os pontos de atenção e cautela que precisam ser validados antes da abordagem.',
-    targetTab: 'radar',
-    openDemoMunicipality: true,
-    spotlightSelector: '#modal-overview-analysis',
-    position: 'top',
+      'Faça perguntas em linguagem natural para cruzar indicadores, comparar municípios e entender o embasamento de cada oportunidade.',
+    targetTab: 'insights',
+    spotlightSelector: '#insights-input-form',
+    allowInteraction: true,
   },
   {
     step: 8,
-    title: 'Mapa de Oportunidades',
-    subtitle: 'Geolocalização B2G',
+    title: 'Central de Ajuda & Conclusão',
+    subtitle: 'Tudo Pronto para Começar',
     content:
-      'Explore oportunidades geograficamente através do mapa vetorial do Brasil. Selecione estados para visualizar seus municípios e analisar a concentração regional.',
-    targetTab: 'mapa',
-    spotlightSelector: '#map-vector-container',
-    position: 'top',
-  },
-  {
-    step: 9,
-    title: 'Pipeline B2G (Kanban)',
-    subtitle: 'Gestão Comercial',
-    content:
-      'Organize municípios estrategicamente entre Abordagem Imediata (0-90 dias), Relacionamento & Planejamento (91-180 dias) e Monitoramento (181-365 dias).',
-    targetTab: 'oportunidades',
-    spotlightSelector: '#pipeline-kanban-board',
-    position: 'top',
-  },
-  {
-    step: 10,
-    title: 'Monitoramento Contínuo',
-    subtitle: 'Watchlist & Sinais',
-    content:
-      'Adicione municípios estratégicos ao monitoramento para acompanhar alterações de vigência, publicações no PNCP, recálculos de score e histórico de eventos.',
-    targetTab: 'monitoramento',
-    spotlightSelector: '#monitoring-watchlist-area',
-    position: 'top',
-  },
-  {
-    step: 11,
-    title: 'Harpia Insights com IA',
-    subtitle: 'Copiloto Analítico',
-    content:
-      'Pergunte à Harpia usando linguagem natural. A IA analisa os dados disponíveis no ambiente e explica as respostas com fontes, sinais e cautelas.',
-    targetTab: 'insights',
-    spotlightSelector: '#insights-input-form',
-    position: 'bottom',
-  },
-  {
-    step: 12,
-    title: 'Você está pronto para usar a Harpia!',
-    subtitle: 'Tour Concluído',
-    content:
-      'Agora você domina todas as ferramentas da plataforma. Identifique oportunidades, filtre por janelas contratuais e potencialize sua prospecção educacional.',
+      'Acesse a Central de Ajuda no cabeçalho ou pressione ⌘K a qualquer momento para buscar municípios, rever o passo a passo ou tirar dúvidas.',
     targetTab: 'visao-geral',
-    position: 'center',
+    spotlightSelector: undefined,
   },
 ];
 
 interface GuidedTourProps {
   isActive: boolean;
+  initialStepIndex?: number;
   onFinishTour: () => void;
   onNavigateTab: (tab: NavTab) => void;
   onOpenDemoMunicipality: () => void;
@@ -161,8 +114,63 @@ interface GuidedTourProps {
   onDismissWelcomeModal: () => void;
 }
 
+interface SpotlightBox {
+  top: number;
+  left: number;
+  width: number;
+  height: number;
+}
+
+interface CardPosition {
+  top?: number;
+  bottom?: number;
+  left?: number;
+  right?: number;
+  isCentered: boolean;
+}
+
+/**
+ * Polls via requestAnimationFrame until target element exists in DOM and is rendered.
+ */
+async function waitForElement(selector: string, timeout = 1200): Promise<HTMLElement | null> {
+  const start = performance.now();
+  while (performance.now() - start < timeout) {
+    const el = document.querySelector(selector) as HTMLElement | null;
+    if (el && (el.offsetWidth > 0 || el.offsetHeight > 0)) {
+      return el;
+    }
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+  }
+  return (document.querySelector(selector) as HTMLElement | null) || null;
+}
+
+/**
+ * Scrolls smoothly and polls until scrolling has stabilized.
+ */
+async function scrollAndStabilize(el: HTMLElement): Promise<DOMRect> {
+  el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+
+  let lastTop = el.getBoundingClientRect().top;
+  let stableCount = 0;
+
+  for (let i = 0; i < 15; i++) {
+    await new Promise((r) => setTimeout(r, 50));
+    const currentTop = el.getBoundingClientRect().top;
+    if (Math.abs(currentTop - lastTop) < 1) {
+      stableCount++;
+      if (stableCount >= 2) break;
+    } else {
+      stableCount = 0;
+      lastTop = currentTop;
+    }
+  }
+
+  return el.getBoundingClientRect();
+}
+
 export const GuidedTour: React.FC<GuidedTourProps> = ({
   isActive,
+  initialStepIndex = 0,
   onFinishTour,
   onNavigateTab,
   onOpenDemoMunicipality,
@@ -171,41 +179,166 @@ export const GuidedTour: React.FC<GuidedTourProps> = ({
   onStartTourFromWelcome,
   onDismissWelcomeModal,
 }) => {
-  const [currentStepIndex, setCurrentStepIndex] = useState(0);
-  const [spotlightRect, setSpotlightRect] = useState<DOMRect | null>(null);
+  const [currentStepIndex, setCurrentStepIndex] = useState(initialStepIndex);
+  const [spotlight, setSpotlight] = useState<SpotlightBox | null>(null);
+  const [cardPos, setCardPos] = useState<CardPosition>({ isCentered: true });
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
-  const step = TOUR_STEPS[currentStepIndex];
+  const cardRef = useRef<HTMLDivElement>(null);
+  const currentStep = TOUR_STEPS[currentStepIndex];
 
-  // Sync tab and modal on step change
+  // Sync step index when initialStepIndex changes (e.g. manual restart)
   useEffect(() => {
-    if (!isActive) return;
+    if (isActive) {
+      setCurrentStepIndex(initialStepIndex);
+    }
+  }, [isActive, initialStepIndex]);
 
-    if (step.targetTab) {
-      onNavigateTab(step.targetTab);
+  // Calculate card position dynamically relative to spotlight box
+  const calculateCardPosition = useCallback((box: SpotlightBox | null): CardPosition => {
+    if (!box || currentStep.step === 8) {
+      return { isCentered: true };
     }
 
-    if (step.openDemoMunicipality) {
+    const cardWidth = Math.min(420, window.innerWidth - 32);
+    const cardHeight = 220; // estimated card height
+    const margin = 14;
+
+    const spaceBelow = window.innerHeight - (box.top + box.height);
+    const spaceAbove = box.top;
+    const spaceRight = window.innerWidth - (box.left + box.width);
+    const spaceLeft = box.left;
+
+    let top: number | undefined;
+    let left: number | undefined;
+
+    // 1. Check vertical space
+    if (spaceBelow >= cardHeight + margin + 10) {
+      // Place below target
+      top = box.top + box.height + margin;
+      left = Math.max(16, Math.min(box.left, window.innerWidth - cardWidth - 16));
+    } else if (spaceAbove >= cardHeight + margin + 10) {
+      // Place above target
+      top = Math.max(16, box.top - cardHeight - margin);
+      left = Math.max(16, Math.min(box.left, window.innerWidth - cardWidth - 16));
+    } else if (window.innerWidth >= 900 && spaceRight >= cardWidth + margin) {
+      // Place to the right on desktop
+      left = box.left + box.width + margin;
+      top = Math.max(16, Math.min(box.top, window.innerHeight - cardHeight - 16));
+    } else if (window.innerWidth >= 900 && spaceLeft >= cardWidth + margin) {
+      // Place to the left on desktop
+      left = Math.max(16, box.left - cardWidth - margin);
+      top = Math.max(16, Math.min(box.top, window.innerHeight - cardHeight - 16));
+    } else {
+      // Fallback: place below or center if completely constrained
+      top = Math.max(16, Math.min(box.top + box.height + margin, window.innerHeight - cardHeight - 16));
+      left = Math.max(16, Math.min(box.left, window.innerWidth - cardWidth - 16));
+    }
+
+    return { top, left, isCentered: false };
+  }, [currentStep.step]);
+
+  // Core step update logic: navigate, wait, scroll, measure, render
+  const updateSpotlight = useCallback(async () => {
+    if (!isActive || !currentStep) return;
+
+    setIsTransitioning(true);
+
+    // 1. Navigate to target tab
+    if (currentStep.targetTab) {
+      onNavigateTab(currentStep.targetTab);
+    }
+
+    // 2. Open or close demo municipality
+    if (currentStep.openDemoMunicipality) {
       onOpenDemoMunicipality();
     } else {
       onCloseDemoMunicipality();
     }
 
-    // Attempt to compute spotlight bounding rect
-    const timer = setTimeout(() => {
-      if (step.spotlightSelector) {
-        const el = document.querySelector(step.spotlightSelector);
-        if (el) {
-          const rect = el.getBoundingClientRect();
-          setSpotlightRect(rect);
-          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          return;
-        }
-      }
-      setSpotlightRect(null);
-    }, 220);
+    // 3. Step 8 or no selector: render centered card cleanly without spotlight
+    if (!currentStep.spotlightSelector) {
+      setSpotlight(null);
+      setCardPos({ isCentered: true });
+      setIsTransitioning(false);
+      return;
+    }
 
-    return () => clearTimeout(timer);
-  }, [currentStepIndex, isActive, step.targetTab, step.openDemoMunicipality]);
+    try {
+      // 4. Wait until target element exists and is rendered
+      const targetEl = await waitForElement(currentStep.spotlightSelector, 1200);
+
+      if (!targetEl) {
+        // Target not found: recover gracefully without freezing
+        setSpotlight(null);
+        setCardPos({ isCentered: true });
+        setIsTransitioning(false);
+        return;
+      }
+
+      // 5. Scroll target into view and wait for stabilization
+      const rect = await scrollAndStabilize(targetEl);
+
+      const box: SpotlightBox = {
+        top: Math.max(4, rect.top - 6),
+        left: Math.max(4, rect.left - 6),
+        width: rect.width + 12,
+        height: rect.height + 12,
+      };
+
+      setSpotlight(box);
+      setCardPos(calculateCardPosition(box));
+    } catch (err) {
+      console.warn('Error during tour positioning:', err);
+      setSpotlight(null);
+      setCardPos({ isCentered: true });
+    } finally {
+      setIsTransitioning(false);
+    }
+  }, [
+    isActive,
+    currentStep,
+    onNavigateTab,
+    onOpenDemoMunicipality,
+    onCloseDemoMunicipality,
+    calculateCardPosition,
+  ]);
+
+  // Run update when step index or active status changes
+  useEffect(() => {
+    if (isActive) {
+      updateSpotlight();
+      localStorage.setItem('harpia_tour_last_step', String(currentStepIndex + 1));
+    }
+  }, [isActive, currentStepIndex, updateSpotlight]);
+
+  // Recalculate on window resize and scroll
+  useEffect(() => {
+    if (!isActive || !currentStep.spotlightSelector) return;
+
+    const handleResizeOrScroll = () => {
+      const el = document.querySelector(currentStep.spotlightSelector!) as HTMLElement | null;
+      if (el) {
+        const rect = el.getBoundingClientRect();
+        const box: SpotlightBox = {
+          top: Math.max(4, rect.top - 6),
+          left: Math.max(4, rect.left - 6),
+          width: rect.width + 12,
+          height: rect.height + 12,
+        };
+        setSpotlight(box);
+        setCardPos(calculateCardPosition(box));
+      }
+    };
+
+    window.addEventListener('resize', handleResizeOrScroll, { passive: true });
+    window.addEventListener('scroll', handleResizeOrScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener('resize', handleResizeOrScroll);
+      window.removeEventListener('scroll', handleResizeOrScroll);
+    };
+  }, [isActive, currentStep.spotlightSelector, calculateCardPosition]);
 
   const handleNext = () => {
     if (currentStepIndex < TOUR_STEPS.length - 1) {
@@ -224,34 +357,34 @@ export const GuidedTour: React.FC<GuidedTourProps> = ({
   const handleComplete = () => {
     onCloseDemoMunicipality();
     onFinishTour();
+    localStorage.setItem('harpia_tour_completed', 'true');
+    localStorage.removeItem('harpia_tour_last_step');
     setCurrentStepIndex(0);
+    setSpotlight(null);
   };
 
-  // 1. First Access Welcome Modal
+  // 1. FIRST ACCESS WELCOME MODAL
   if (showWelcomeModal) {
     return (
-      <div className="fixed inset-0 z-50 overflow-y-auto bg-[#050B1E]/85 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
-        <div className="w-full max-w-md bg-[#0A1329] border border-[#00DDF2]/50 rounded-2xl shadow-[0_0_40px_rgba(0,221,242,0.18)] p-6 sm:p-7 space-y-5 text-center relative overflow-hidden">
-          <div className="w-14 h-14 rounded-2xl bg-[#00DDF2]/15 border border-[#00DDF2]/40 flex items-center justify-center text-[#00DDF2] mx-auto shadow-[0_0_20px_rgba(0,221,242,0.25)]">
-            <Compass className="w-7 h-7" />
+      <div className="fixed inset-0 z-50 overflow-y-auto bg-[#050B1E]/75 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="w-full max-w-md bg-[#0A1329] border border-[#16264C] rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] p-6 sm:p-7 space-y-5 text-center">
+          <div className="w-12 h-12 rounded-xl bg-[#00DDF2]/10 border border-[#00DDF2]/30 flex items-center justify-center text-[#00DDF2] mx-auto">
+            <Compass className="w-6 h-6" />
           </div>
 
-          <div className="space-y-2">
-            <span className="text-[11px] font-mono uppercase tracking-widest text-[#00DDF2] font-semibold">
-              Onboarding Interativo
-            </span>
-            <h2 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
+          <div className="space-y-1.5">
+            <h2 className="text-xl font-bold text-white tracking-tight">
               Bem-vindo à Harpia Tech
             </h2>
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-sm mx-auto">
-              Vamos apresentar em poucos passos como identificar, analisar e acompanhar oportunidades comerciais no setor público educacional.
+            <p className="text-xs text-slate-300 leading-relaxed max-w-sm mx-auto">
+              Vamos apresentar em poucos passos como identificar, analisar e acompanhar oportunidades comerciais no setor público.
             </p>
           </div>
 
-          <div className="pt-2 flex flex-col sm:flex-row items-center gap-3">
+          <div className="pt-2 flex flex-col sm:flex-row items-center gap-2.5">
             <button
               onClick={onStartTourFromWelcome}
-              className="w-full sm:flex-1 py-2.5 px-4 rounded-xl bg-[#00DDF2] text-[#050B1E] font-bold text-xs hover:bg-[#5beaff] transition-all shadow-[0_0_15px_rgba(0,221,242,0.3)] flex items-center justify-center gap-2"
+              className="w-full sm:flex-1 py-2.5 px-4 rounded-xl bg-[#00DDF2] text-[#050B1E] font-bold text-xs hover:bg-[#5beaff] transition-colors flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(0,221,242,0.25)]"
             >
               <span>COMEÇAR TOUR</span>
               <ArrowRight className="w-4 h-4" />
@@ -265,78 +398,92 @@ export const GuidedTour: React.FC<GuidedTourProps> = ({
             </button>
           </div>
 
-          <p className="text-[10.5px] text-slate-400">
-            Você poderá reiniciar o tour a qualquer momento na Central de Ajuda ou em Configurações.
+          <p className="text-[11px] text-slate-400">
+            Você pode reiniciar o tutorial a qualquer momento na Central de Ajuda ou em Configurações.
           </p>
         </div>
       </div>
     );
   }
 
-  // 2. Active Tour Overlay & Card
   if (!isActive) return null;
 
   return (
     <div className="fixed inset-0 z-50 pointer-events-none select-none">
-      {/* Darkened backdrop with spotlight effect */}
-      <div className="absolute inset-0 bg-[#050B1E]/80 backdrop-blur-[2px] transition-all duration-300" />
+      {/* Lighter backdrop so user still understands interface context */}
+      <div className="absolute inset-0 bg-[#050B1E]/65 transition-opacity duration-200" />
 
-      {/* Highlight Cutout Box if element found */}
-      {spotlightRect && (
+      {/* Stable Cyan Spotlight without excessive animation */}
+      {spotlight && (
         <div
-          className="absolute border-2 border-[#00DDF2] rounded-xl shadow-[0_0_30px_rgba(0,221,242,0.5),0_0_0_9999px_rgba(5,11,30,0.82)] pointer-events-none transition-all duration-300 animate-pulse"
+          className="absolute border border-[#00DDF2] rounded-xl shadow-[0_0_15px_rgba(0,221,242,0.35),0_0_0_9999px_rgba(5,11,30,0.65)] pointer-events-none transition-all duration-200 ease-out"
           style={{
-            top: `${Math.max(8, spotlightRect.top - 6)}px`,
-            left: `${Math.max(8, spotlightRect.left - 6)}px`,
-            width: `${spotlightRect.width + 12}px`,
-            height: `${spotlightRect.height + 12}px`,
+            top: `${spotlight.top}px`,
+            left: `${spotlight.left}px`,
+            width: `${spotlight.width}px`,
+            height: `${spotlight.height}px`,
           }}
         />
       )}
 
-      {/* Explanatory Floating Card */}
-      <div className="fixed inset-0 flex items-center justify-center p-4 pointer-events-auto">
-        <div className="w-full max-w-lg bg-[#070F26] border border-[#00DDF2]/60 rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.9)] p-5 sm:p-6 space-y-4 animate-in zoom-in-95 duration-200">
-          {/* Top Bar with Step & Skip */}
-          <div className="flex items-center justify-between border-b border-[#16264C] pb-3">
+      {/* Explanatory Tour Card (positioned dynamically close to target, or centered) */}
+      <div
+        ref={cardRef}
+        className={`pointer-events-auto transition-all duration-200 ease-out ${
+          cardPos.isCentered
+            ? 'fixed inset-0 flex items-center justify-center p-4'
+            : 'absolute'
+        }`}
+        style={
+          !cardPos.isCentered && cardPos.top !== undefined && cardPos.left !== undefined
+            ? {
+                top: `${cardPos.top}px`,
+                left: `${cardPos.left}px`,
+                width: `${Math.min(420, window.innerWidth - 32)}px`,
+              }
+            : undefined
+        }
+      >
+        <div className="w-full max-w-md bg-[#0A1329] border border-[#16264C] rounded-xl shadow-[0_15px_40px_rgba(0,0,0,0.85)] p-5 space-y-3.5">
+          {/* Header Row */}
+          <div className="flex items-center justify-between border-b border-[#16264C] pb-2.5">
             <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded bg-[#00DDF2]/20 border border-[#00DDF2]/50 text-[#00DDF2] text-xs font-mono font-bold">
-                ETAPA {step.step} DE {TOUR_STEPS.length}
+              <span className="px-2 py-0.5 rounded bg-[#00DDF2]/15 text-[#00DDF2] text-[11px] font-mono font-bold">
+                Passo {currentStep.step} de {TOUR_STEPS.length}
               </span>
-              <span className="text-xs font-medium text-slate-400">
-                {step.subtitle}
+              <span className="text-xs text-slate-400 font-medium">
+                {currentStep.subtitle}
               </span>
             </div>
 
             <button
               onClick={handleComplete}
-              className="text-xs text-slate-400 hover:text-white flex items-center gap-1 transition-colors"
+              className="text-xs text-slate-400 hover:text-white transition-colors"
+              title="Pular tutorial"
             >
-              <span>Pular tour</span>
-              <X className="w-3.5 h-3.5" />
+              Pular
             </button>
           </div>
 
-          {/* Title & Body */}
-          <div className="space-y-2">
-            <h3 className="text-base sm:text-lg font-bold text-white tracking-tight flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-[#00DDF2]" />
-              <span>{step.title}</span>
+          {/* Title & Explanation Content */}
+          <div className="space-y-1.5">
+            <h3 className="text-sm font-bold text-white tracking-tight">
+              {currentStep.title}
             </h3>
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-              {step.content}
+            <p className="text-xs text-slate-300 leading-relaxed">
+              {currentStep.content}
             </p>
           </div>
 
-          {/* Step 12 Action Buttons or Navigation Buttons */}
-          {step.step === 12 ? (
-            <div className="pt-2 flex flex-col sm:flex-row items-center gap-2.5">
+          {/* Step 8 (Final) vs Navigation Buttons */}
+          {currentStep.step === 8 ? (
+            <div className="pt-2 flex flex-col sm:flex-row items-center gap-2">
               <button
                 onClick={handleComplete}
-                className="w-full sm:flex-1 py-2.5 px-4 rounded-xl bg-[#00DDF2] text-[#050B1E] font-bold text-xs hover:bg-[#5beaff] transition-all shadow-[0_0_15px_rgba(0,221,242,0.3)] flex items-center justify-center gap-2"
+                className="w-full sm:flex-1 py-2 px-3 rounded-lg bg-[#00DDF2] text-[#050B1E] font-bold text-xs hover:bg-[#5beaff] transition-colors flex items-center justify-center gap-1.5 shadow-[0_0_12px_rgba(0,221,242,0.2)]"
               >
                 <span>EXPLORAR PLATAFORMA</span>
-                <CheckCircle2 className="w-4 h-4" />
+                <Check className="w-3.5 h-3.5" />
               </button>
 
               <button
@@ -344,7 +491,7 @@ export const GuidedTour: React.FC<GuidedTourProps> = ({
                   handleComplete();
                   onNavigateTab('insights');
                 }}
-                className="w-full sm:flex-1 py-2.5 px-4 rounded-xl bg-[#0A1329] hover:bg-[#0F1C3C] text-[#00DDF2] font-semibold text-xs border border-[#00DDF2]/40 transition-colors flex items-center justify-center gap-1.5"
+                className="w-full sm:flex-1 py-2 px-3 rounded-lg bg-[#0F1C3C] hover:bg-[#16264C] text-[#00DDF2] font-semibold text-xs border border-[#16264C] transition-colors flex items-center justify-center gap-1.5"
               >
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>PERGUNTAR À HARPIA</span>
@@ -355,10 +502,10 @@ export const GuidedTour: React.FC<GuidedTourProps> = ({
               <button
                 onClick={handlePrev}
                 disabled={currentStepIndex === 0}
-                className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
+                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                   currentStepIndex === 0
-                    ? 'border-transparent text-slate-600 cursor-not-allowed'
-                    : 'border-[#16264C] text-slate-300 hover:text-white hover:bg-[#0A1329]'
+                    ? 'text-slate-600 cursor-not-allowed'
+                    : 'text-slate-300 hover:text-white hover:bg-[#0F1C3C]'
                 }`}
               >
                 <ChevronLeft className="w-3.5 h-3.5" />
@@ -370,24 +517,27 @@ export const GuidedTour: React.FC<GuidedTourProps> = ({
                 {TOUR_STEPS.map((_, i) => (
                   <span
                     key={i}
-                    className={`w-1.5 h-1.5 rounded-full transition-all ${
+                    className={`h-1 rounded-full transition-all ${
                       i === currentStepIndex
-                        ? 'bg-[#00DDF2] w-4'
+                        ? 'bg-[#00DDF2] w-3.5'
                         : i < currentStepIndex
-                        ? 'bg-slate-500'
-                        : 'bg-[#16264C]'
+                        ? 'bg-slate-500 w-1'
+                        : 'bg-[#16264C] w-1'
                     }`}
                   />
                 ))}
               </div>
 
-              <button
-                onClick={handleNext}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#00DDF2] text-[#050B1E] text-xs font-bold hover:bg-[#5beaff] transition-all shadow-[0_0_12px_rgba(0,221,242,0.2)]"
-              >
-                <span>Próximo</span>
-                <ChevronRight className="w-3.5 h-3.5" />
-              </button>
+              <div className="flex items-center gap-2">
+                {/* Entendi button for fluid confirmation */}
+                <button
+                  onClick={handleNext}
+                  className="px-3 py-1.5 rounded-lg bg-[#00DDF2] text-[#050B1E] text-xs font-bold hover:bg-[#5beaff] transition-colors flex items-center gap-1 shadow-[0_0_10px_rgba(0,221,242,0.2)]"
+                >
+                  <span>{currentStep.step === 7 ? 'Próximo' : 'Entendi'}</span>
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
           )}
         </div>

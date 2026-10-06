@@ -1,22 +1,7 @@
 import React, { useState } from 'react';
 import {
-  Sparkles,
   ArrowRight,
-  ShieldCheck,
-  Zap,
-  TrendingUp,
-  MapPin,
-  Calendar,
-  Layers,
-  Database,
-  Users,
-  Compass,
-  CheckCircle2,
-  Lock,
   ChevronRight,
-  Activity,
-  FileText,
-  Search,
   Check,
   X,
 } from 'lucide-react';
@@ -47,7 +32,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
       setDemoSubmitted(false);
       setDemoModalOpen(false);
       setDemoForm({ nome: '', email: '', empresa: '', telefone: '' });
-    }, 2800);
+    }, 2500);
   };
 
   const scrollToSection = (id: string) => {
@@ -60,42 +45,45 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
   return (
     <div className="min-h-screen bg-[#050B1E] text-slate-100 flex flex-col font-sans selection:bg-[#00DDF2]/20 selection:text-[#00DDF2]">
       {/* ===================================================
-          1. STICKY HEADER
+          1. RESTRAINED INSTITUTIONAL HEADER
          =================================================== */}
-      <header className="h-20 bg-[#050B1E]/90 backdrop-blur-md border-b border-[#16264C]/80 sticky top-0 z-40 px-4 sm:px-8 flex items-center justify-between">
-        <div className="flex items-center gap-8">
-          <div className="cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+      <header className="h-16 bg-[#050B1E]/95 border-b border-[#16264C]/70 sticky top-0 z-40 px-4 sm:px-8 flex items-center justify-between">
+        <div className="flex items-center gap-10">
+          <div
+            className="cursor-pointer"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          >
             <HarpiaLogo collapsed={false} />
           </div>
 
-          <nav className="hidden md:flex items-center gap-6 text-xs font-semibold text-slate-300">
+          <nav className="hidden md:flex items-center gap-7 text-xs font-medium text-slate-300">
             <button
               onClick={() => scrollToSection('produto')}
-              className="hover:text-[#00DDF2] transition-colors"
+              className="hover:text-white transition-colors"
             >
               Produto
             </button>
             <button
               onClick={() => scrollToSection('como-funciona')}
-              className="hover:text-[#00DDF2] transition-colors"
+              className="hover:text-white transition-colors"
             >
               Como Funciona
             </button>
             <button
               onClick={() => scrollToSection('score-harpia')}
-              className="hover:text-[#00DDF2] transition-colors"
+              className="hover:text-white transition-colors"
             >
               Score Harpia
             </button>
             <button
               onClick={() => scrollToSection('inteligencia')}
-              className="hover:text-[#00DDF2] transition-colors"
+              className="hover:text-white transition-colors"
             >
               Inteligência
             </button>
             <button
               onClick={() => scrollToSection('beneficios')}
-              className="hover:text-[#00DDF2] transition-colors"
+              className="hover:text-white transition-colors"
             >
               Benefícios
             </button>
@@ -105,395 +93,410 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
         <div className="flex items-center gap-3">
           <button
             onClick={onNavigateLogin}
-            className="px-4 py-2 text-xs font-semibold text-slate-200 hover:text-white hover:bg-[#0F1C3C] border border-[#16264C] rounded-xl transition-all"
+            className="px-3.5 py-1.5 text-xs font-medium text-slate-300 hover:text-white transition-colors"
           >
-            ENTRAR
+            Entrar
           </button>
 
           <button
             onClick={() => setDemoModalOpen(true)}
-            className="px-4 py-2 text-xs font-bold text-[#050B1E] bg-[#00DDF2] hover:bg-[#5beaff] rounded-xl transition-all shadow-[0_0_15px_rgba(0,221,242,0.3)] hidden sm:flex items-center gap-1.5"
+            className="px-4 py-1.5 text-xs font-semibold text-[#050B1E] bg-[#00DDF2] hover:bg-[#5beaff] rounded-lg transition-colors"
           >
-            <span>SOLICITAR DEMONSTRAÇÃO</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+            Solicitar demonstração
           </button>
         </div>
       </header>
 
       {/* ===================================================
-          2. HERO SECTION
+          2. NEW EDITORIAL SPLIT HERO
          =================================================== */}
-      <section className="relative pt-16 pb-20 sm:pt-24 sm:pb-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full overflow-hidden">
-        {/* Subtle radial glow */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-[#00DDF2]/10 rounded-full blur-[120px] pointer-events-none" />
+      <section className="pt-16 pb-20 sm:pt-24 sm:pb-28 px-4 sm:px-8 max-w-7xl mx-auto w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+          {/* Left Column: Clear, confident editorial headline */}
+          <div className="lg:col-span-6 space-y-6">
+            <h1 className="text-3xl sm:text-5xl lg:text-[52px] font-bold text-white tracking-tight leading-[1.15]">
+              Inteligência para vender melhor ao setor público.
+            </h1>
 
-        <div className="relative text-center max-w-3xl mx-auto space-y-6">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0A1329] border border-[#00DDF2]/40 text-[#00DDF2] text-xs font-mono">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#00DDF2] animate-pulse" />
-            <span>Inteligência B2G para o Setor Educacional</span>
-          </div>
+            <p className="text-base sm:text-lg text-slate-300 leading-relaxed max-w-xl">
+              A Harpia organiza dados fiscais, educacionais e de compras públicas para indicar onde estão as melhores oportunidades comerciais — e por quê.
+            </p>
 
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.12]">
-            Transforme dados públicos em{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-[#00DDF2] to-[#00DDF2]">
-              oportunidades comerciais.
-            </span>
-          </h1>
-
-          <p className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
-            A Harpia conecta indicadores fiscais, educacionais e de compras públicas para ajudar sua equipe a identificar quais municípios priorizar, quando abordar e por quê.
-          </p>
-
-          <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3.5">
-            <button
-              onClick={() => setDemoModalOpen(true)}
-              className="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-[#00DDF2] text-[#050B1E] font-extrabold text-sm hover:bg-[#5beaff] transition-all shadow-[0_0_25px_rgba(0,221,242,0.35)] flex items-center justify-center gap-2"
-            >
-              <span>SOLICITAR DEMONSTRAÇÃO</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-
-            <button
-              onClick={onNavigateApp}
-              className="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-[#0A1329] hover:bg-[#0F1C3C] text-white font-semibold text-sm border border-[#16264C] hover:border-[#00DDF2]/50 transition-all flex items-center justify-center gap-2"
-            >
-              <Compass className="w-4 h-4 text-[#00DDF2]" />
-              <span>CONHECER A PLATAFORMA</span>
-            </button>
-          </div>
-
-          {/* Social Proof Strip */}
-          <div className="pt-8 flex flex-wrap items-center justify-center gap-6 text-xs text-slate-400 font-mono">
-            <span>• 5.572 Municípios Mapeados</span>
-            <span>• 100% Fontes Oficiais</span>
-            <span>• Algoritmo Ponderado B2G</span>
-          </div>
-        </div>
-
-        {/* HERO MOCKUP / COMPOSITION */}
-        <div className="mt-14 relative max-w-5xl mx-auto rounded-2xl bg-[#070F26] border border-[#16264C] shadow-[0_20px_60px_rgba(0,0,0,0.8)] overflow-hidden">
-          {/* Mockup Header Strip */}
-          <div className="h-10 bg-[#0A1329] border-b border-[#16264C] px-4 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-rose-500/80" />
-              <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80" />
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
-              <span className="ml-2 text-[11px] font-mono text-slate-400">
-                harpia.app/radar
-              </span>
-            </div>
-            <span className="px-2 py-0.5 rounded bg-amber-500/15 border border-amber-500/30 text-[10px] text-amber-300 font-mono">
-              Ambiente de Demonstração
-            </span>
-          </div>
-
-          {/* Mockup Body Preview */}
-          <div className="p-5 sm:p-7 space-y-5 bg-gradient-to-b from-[#070F26] to-[#050B1E]">
-            {/* Top Cards in Mockup */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div className="p-3.5 rounded-xl bg-[#0A1329] border border-[#16264C]">
-                <span className="text-[10px] text-slate-400 uppercase font-semibold">Monitorados</span>
-                <p className="text-xl font-bold text-white font-mono-numbers mt-0.5">5.572</p>
-                <span className="text-[10px] text-emerald-400 font-mono">Território nacional</span>
-              </div>
-              <div className="p-3.5 rounded-xl bg-[#0A1329] border border-[#00DDF2]/30 shadow-[0_0_15px_rgba(0,221,242,0.1)]">
-                <span className="text-[10px] text-[#00DDF2] uppercase font-semibold">Janela 0–90 dias</span>
-                <p className="text-xl font-bold text-white font-mono-numbers mt-0.5">48</p>
-                <span className="text-[10px] text-emerald-400 font-mono">Abordagem imediata</span>
-              </div>
-              <div className="p-3.5 rounded-xl bg-[#0A1329] border border-[#16264C]">
-                <span className="text-[10px] text-slate-400 uppercase font-semibold">Score Médio</span>
-                <p className="text-xl font-bold text-white font-mono-numbers mt-0.5">72.4</p>
-                <span className="text-[10px] text-slate-400 font-mono">Escala de 0 a 100</span>
-              </div>
-              <div className="p-3.5 rounded-xl bg-[#0A1329] border border-[#16264C]">
-                <span className="text-[10px] text-slate-400 uppercase font-semibold">Fontes Auditadas</span>
-                <p className="text-xl font-bold text-white font-mono-numbers mt-0.5">8</p>
-                <span className="text-[10px] text-[#00DDF2] font-mono">Siconfi, PNCP, INEP</span>
-              </div>
-            </div>
-
-            {/* Opportunity Highlight Row */}
-            <div className="p-4 rounded-xl bg-[#0A1329] border border-[#00DDF2]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-[#00DDF2]/20 border border-[#00DDF2]/50 flex items-center justify-center text-[#00DDF2] font-bold">
-                  87
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <strong className="text-sm text-white">Município Alfa</strong>
-                    <span className="px-1.5 py-0.2 rounded bg-[#16264C] text-[10px] font-mono text-white">PA</span>
-                    <span className="px-2 py-0.2 rounded bg-emerald-500/15 border border-emerald-500/30 text-[10px] text-emerald-400 font-bold">
-                      ALTA PRIORIDADE
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-400 mt-0.5">
-                    Janela: 0–90 dias · Fiscal 28/30 · Educação 22/25 · Contratos vigentes encerrando em 68 dias
-                  </p>
-                </div>
-              </div>
+            <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+              <button
+                onClick={() => setDemoModalOpen(true)}
+                className="px-6 py-3 rounded-lg bg-[#00DDF2] text-[#050B1E] font-bold text-xs hover:bg-[#5beaff] transition-colors flex items-center justify-center gap-2 text-center"
+              >
+                <span>SOLICITAR DEMONSTRAÇÃO</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
 
               <button
                 onClick={onNavigateApp}
-                className="px-3.5 py-1.5 rounded-lg bg-[#00DDF2] text-[#050B1E] text-xs font-bold hover:bg-[#5beaff] transition-colors self-start sm:self-center shrink-0 flex items-center gap-1.5"
+                className="px-6 py-3 rounded-lg bg-[#0A1329] hover:bg-[#0F1C3C] text-slate-200 hover:text-white font-medium text-xs border border-[#16264C] transition-colors text-center"
               >
-                <span>Ver Dossiê</span>
-                <ChevronRight className="w-3.5 h-3.5" />
+                ENTRAR NA PLATAFORMA
               </button>
             </div>
-          </div>
-        </div>
-      </section>
 
-      {/* ===================================================
-          3. SECTION — THE PROBLEM
-         =================================================== */}
-      <section id="problema" className="py-20 border-t border-[#16264C]/70 bg-[#070F26]/60">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-          <div className="text-center max-w-2xl mx-auto space-y-3">
-            <span className="text-xs font-mono text-[#00DDF2] uppercase tracking-wider">
-              O Desafio do Mercado B2G
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
-              Dados existem. O desafio é saber onde está a oportunidade.
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-6 rounded-2xl bg-[#0A1329] border border-[#16264C] space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-rose-500/15 border border-rose-500/40 flex items-center justify-center text-rose-400">
-                <FileText className="w-5 h-5" />
-              </div>
-              <h3 className="text-base font-bold text-white">Dados Fragmentados</h3>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Informações orçamentárias no Siconfi, indicadores pedagógicos no INEP, editais dispersos em dezenas de diários oficiais e PNCP. Conectar essas pontas manualmente consome semanas.
-              </p>
-            </div>
-
-            <div className="p-6 rounded-2xl bg-[#0A1329] border border-[#16264C] space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-500/40 flex items-center justify-center text-amber-400">
-                <Calendar className="w-5 h-5" />
-              </div>
-              <h3 className="text-base font-bold text-white">Timing Inadequado</h3>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Abordar tarde demais significa encontrar um pregão já em andamento ou orçamento esgotado. Abordar cedo demais sem planejamento gera reuniões infrutíferas.
-              </p>
-            </div>
-
-            <div className="p-6 rounded-2xl bg-[#0A1329] border border-[#16264C] space-y-3">
-              <div className="w-10 h-10 rounded-xl bg-indigo-500/15 border border-indigo-500/40 flex items-center justify-center text-indigo-400">
-                <Layers className="w-5 h-5" />
-              </div>
-              <h3 className="text-base font-bold text-white">Falta de Contexto</h3>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Listas estáticas de municípios com CNPJ não mostram a saúde fiscal, a urgência pedagógica nem o histórico de fornecimento da rede pública.
-              </p>
-            </div>
-          </div>
-
-          {/* Highlight Quote Box */}
-          <div className="p-6 rounded-2xl bg-[#050B1E] border border-[#00DDF2]/30 text-center max-w-3xl mx-auto shadow-[0_0_30px_rgba(0,221,242,0.08)]">
-            <p className="text-base sm:text-lg font-semibold text-slate-200 italic">
-              “Uma decisão comercial não começa com uma lista de municípios. Começa com contexto.”
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* ===================================================
-          4. SECTION — HOW HARPIA WORKS
-         =================================================== */}
-      <section id="como-funciona" className="py-20 border-t border-[#16264C]/70">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-          <div className="text-center max-w-2xl mx-auto space-y-3">
-            <span className="text-xs font-mono text-[#00DDF2] uppercase tracking-wider">
-              Metodologia Harpia
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
-              Como transformamos dados em receita pública
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            <div className="p-5 rounded-2xl bg-[#0A1329] border border-[#16264C] space-y-3 relative">
-              <span className="text-2xl font-black font-mono text-[#00DDF2]">01</span>
-              <h3 className="text-sm font-bold text-white uppercase tracking-wider">COLETAR</h3>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Mapeamento de bases públicas e fontes de referência governamentais: finanças, educação, compras e canais oficiais.
-              </p>
-            </div>
-
-            <div className="p-5 rounded-2xl bg-[#0A1329] border border-[#16264C] space-y-3 relative">
-              <span className="text-2xl font-black font-mono text-[#00DDF2]">02</span>
-              <h3 className="text-sm font-bold text-white uppercase tracking-wider">CONECTAR</h3>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Normalização e padronização dos indicadores municipais para permitir comparação justa e análise em escala nacional.
-              </p>
-            </div>
-
-            <div className="p-5 rounded-2xl bg-[#0A1329] border border-[#16264C] space-y-3 relative">
-              <span className="text-2xl font-black font-mono text-[#00DDF2]">03</span>
-              <h3 className="text-sm font-bold text-white uppercase tracking-wider">PRIORIZAR</h3>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Aplicação do algoritmo Score Harpia (0 a 100) para separar ruído de oportunidade comercial concreta.
-              </p>
-            </div>
-
-            <div className="p-5 rounded-2xl bg-[#0A1329] border border-[#16264C] space-y-3 relative">
-              <span className="text-2xl font-black font-mono text-[#00DDF2]">04</span>
-              <h3 className="text-sm font-bold text-white uppercase tracking-wider">EXPLICAR</h3>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Copiloto com IA que detalha sinais favoráveis, riscos de governança, janela de contratação e recomenda a próxima ação comercial.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ===================================================
-          5. SECTION — SCORE HARPIA (FIVE DIMENSIONS)
-         =================================================== */}
-      <section id="score-harpia" className="py-20 border-t border-[#16264C]/70 bg-[#070F26]/60">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-          <div className="text-center max-w-2xl mx-auto space-y-3">
-            <span className="text-xs font-mono text-[#00DDF2] uppercase tracking-wider">
-              Algoritmo de Priorização
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
-              Cinco dimensões. Uma visão da oportunidade.
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-400">
-              Cada município recebe uma pontuação consolidada de 0 a 100 com pesos balanceados para o segmento educacional.
+            <p className="text-xs text-slate-400 font-normal">
+              Inteligência B2G para empresas que atendem o setor público educacional.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3.5">
-            <div className="p-4 rounded-xl bg-[#0A1329] border border-[#16264C] space-y-2">
-              <div className="flex items-baseline justify-between">
-                <span className="text-3xl font-extrabold text-[#00DDF2] font-mono-numbers">30</span>
-                <span className="text-[10px] text-slate-400 font-mono">pontos</span>
+          {/* Right Column: Faithful, realistic representation of the actual Harpia interface */}
+          <div className="lg:col-span-6">
+            <div className="bg-[#0A1329] border border-[#16264C] rounded-xl overflow-hidden shadow-2xl">
+              {/* Internal platform header preview */}
+              <div className="px-5 py-3.5 border-b border-[#16264C] flex items-center justify-between bg-[#070F26]">
+                <div className="flex items-center gap-3">
+                  <span className="text-xs font-semibold text-white">Radar de Municípios</span>
+                  <span className="text-slate-500 text-xs">/</span>
+                  <span className="text-[11px] text-slate-400 font-mono">5.572 analisados</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="px-2 py-0.5 rounded bg-[#16264C] text-[10px] text-[#00DDF2] font-mono font-medium">
+                    0–90 dias: 48
+                  </span>
+                </div>
               </div>
-              <h3 className="text-xs font-bold text-white">Capacidade Fiscal</h3>
-              <p className="text-[11px] text-slate-400 leading-snug">
-                Receita Corrente Líquida, arrecadação própria, aplicação de 25% na educação e restos a pagar.
-              </p>
-            </div>
 
-            <div className="p-4 rounded-xl bg-[#0A1329] border border-[#16264C] space-y-2">
-              <div className="flex items-baseline justify-between">
-                <span className="text-3xl font-extrabold text-teal-400 font-mono-numbers">25</span>
-                <span className="text-[10px] text-slate-400 font-mono">pontos</span>
+              {/* Realistic table view snippet */}
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs border-collapse">
+                  <thead>
+                    <tr className="border-b border-[#16264C] text-slate-400 bg-[#050B1E]/60 text-[11px]">
+                      <th className="py-2.5 px-4 font-medium">Município</th>
+                      <th className="py-2.5 px-3 font-medium">UF</th>
+                      <th className="py-2.5 px-3 font-medium text-center">Score</th>
+                      <th className="py-2.5 px-3 font-medium">Janela</th>
+                      <th className="py-2.5 px-4 font-medium">Prioridade</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#16264C]/50 text-slate-300">
+                    <tr className="bg-[#0F1C3C]/40">
+                      <td className="py-3 px-4 font-semibold text-white">Município Alfa</td>
+                      <td className="py-3 px-3 font-mono text-slate-400">PA</td>
+                      <td className="py-3 px-3 text-center">
+                        <span className="font-mono font-bold text-[#00DDF2]">87</span>
+                      </td>
+                      <td className="py-3 px-3 text-slate-300">0–90 dias</td>
+                      <td className="py-3 px-4">
+                        <span className="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-400 font-semibold text-[10px] border border-emerald-500/30">
+                          Imediata
+                        </span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="py-3 px-4 font-semibold text-white">Município Beta</td>
+                      <td className="py-3 px-3 font-mono text-slate-400">SP</td>
+                      <td className="py-3 px-3 text-center">
+                        <span className="font-mono font-bold text-white">79</span>
+                      </td>
+                      <td className="py-3 px-3 text-slate-300">91–180 dias</td>
+                      <td className="py-3 px-4">
+                        <span className="px-2 py-0.5 rounded bg-[#00DDF2]/15 text-[#00DDF2] font-semibold text-[10px] border border-[#00DDF2]/30">
+                          Próxima
+                        </span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="py-3 px-4 font-semibold text-white">Município Gama</td>
+                      <td className="py-3 px-3 font-mono text-slate-400">MG</td>
+                      <td className="py-3 px-3 text-center">
+                        <span className="font-mono font-bold text-white">72</span>
+                      </td>
+                      <td className="py-3 px-3 text-slate-300">181–365 dias</td>
+                      <td className="py-3 px-4">
+                        <span className="px-2 py-0.5 rounded bg-indigo-500/15 text-indigo-300 font-semibold text-[10px] border border-indigo-500/30">
+                          Estratégica
+                        </span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="py-3 px-4 font-semibold text-white">Município Delta</td>
+                      <td className="py-3 px-3 font-mono text-slate-400">PR</td>
+                      <td className="py-3 px-3 text-center">
+                        <span className="font-mono font-bold text-white">68</span>
+                      </td>
+                      <td className="py-3 px-3 text-slate-400">Sem sinal</td>
+                      <td className="py-3 px-4">
+                        <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-medium text-[10px]">
+                          Monitorar
+                        </span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
-              <h3 className="text-xs font-bold text-white">Necessidade Educacional</h3>
-              <p className="text-[11px] text-slate-400 leading-snug">
-                Metas do IDEB nos anos iniciais e finais, proficiência SAEB, taxas de abandono e distorção.
-              </p>
-            </div>
 
-            <div className="p-4 rounded-xl bg-[#0A1329] border border-[#16264C] space-y-2">
-              <div className="flex items-baseline justify-between">
-                <span className="text-3xl font-extrabold text-cyan-400 font-mono-numbers">25</span>
-                <span className="text-[10px] text-slate-400 font-mono">pontos</span>
+              {/* Bottom detail pill */}
+              <div className="px-4 py-2.5 bg-[#050B1E] border-t border-[#16264C] flex items-center justify-between text-[11px] text-slate-400">
+                <span>Dossiê Alfa: Contrato de software educacional expirando em 68 dias</span>
+                <span className="text-[#00DDF2] font-medium">Ver Ficha →</span>
               </div>
-              <h3 className="text-xs font-bold text-white">Oportunidade Contratação</h3>
-              <p className="text-[11px] text-slate-400 leading-snug">
-                Proximidade de expiração de contratos vigentes, histórico de compras e PCA/LOA.
-              </p>
-            </div>
-
-            <div className="p-4 rounded-xl bg-[#0A1329] border border-[#16264C] space-y-2">
-              <div className="flex items-baseline justify-between">
-                <span className="text-3xl font-extrabold text-indigo-400 font-mono-numbers">10</span>
-                <span className="text-[10px] text-slate-400 font-mono">pontos</span>
-              </div>
-              <h3 className="text-xs font-bold text-white">Acesso Institucional</h3>
-              <p className="text-[11px] text-slate-400 leading-snug">
-                Estrutura de lideranças mapeada, canais institucionais e portais oficiais verificados.
-              </p>
-            </div>
-
-            <div className="p-4 rounded-xl bg-[#0A1329] border border-[#16264C] space-y-2">
-              <div className="flex items-baseline justify-between">
-                <span className="text-3xl font-extrabold text-violet-400 font-mono-numbers">10</span>
-                <span className="text-[10px] text-slate-400 font-mono">pontos</span>
-              </div>
-              <h3 className="text-xs font-bold text-white">Governança & Risco</h3>
-              <p className="text-[11px] text-slate-400 leading-snug">
-                Registros de auditoria em tribunais de contas (TCE) e transparência da gestão pública.
-              </p>
             </div>
           </div>
-
-          <p className="text-center text-xs text-slate-400 max-w-2xl mx-auto leading-relaxed">
-            * O Score Harpia apoia a priorização comercial e não representa previsão ou garantia de contratação.
-          </p>
         </div>
       </section>
 
       {/* ===================================================
-          6. SECTION — INTELLIGENCE (HARPIA INSIGHTS)
+          3. SECTION 1 — LARGE STATEMENT & 3 CONCISE COLUMNS
          =================================================== */}
-      <section id="inteligencia" className="py-20 border-t border-[#16264C]/70">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-          <div className="text-center max-w-2xl mx-auto space-y-3">
-            <span className="text-xs font-mono text-[#00DDF2] uppercase tracking-wider">
-              Copiloto com IA
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
-              Não basta dizer onde. É preciso explicar por quê.
+      <section className="py-20 border-t border-[#16264C]/70">
+        <div className="max-w-6xl mx-auto px-4 sm:px-8 space-y-12">
+          <div className="max-w-3xl">
+            <h2 className="text-2xl sm:text-4xl font-bold text-white tracking-tight leading-snug">
+              5.572 municípios. Milhares de sinais. Uma leitura objetiva de prioridade.
             </h2>
-            <p className="text-xs sm:text-sm text-slate-400">
-              Converse diretamente com o conjunto de dados da plataforma através de linguagem natural.
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 pt-4 border-t border-[#16264C]/40">
+            <div className="space-y-2">
+              <span className="text-[11px] font-mono text-[#00DDF2] tracking-wider uppercase font-semibold">
+                Onde Atuar
+              </span>
+              <h3 className="text-base font-semibold text-white">
+                Identifique municípios com maior aderência
+              </h3>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Cruze capacidade orçamentária, cumprimento constitucional dos 25% em educação e vulnerabilidade de aprendizagem.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <span className="text-[11px] font-mono text-[#00DDF2] tracking-wider uppercase font-semibold">
+                Quando Abordar
+              </span>
+              <h3 className="text-base font-semibold text-white">
+                Entenda a janela de contratação
+              </h3>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Monitore o término de vigência de contratos anteriores e previsões no Plano de Contratações Anual para chegar no momento certo.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <span className="text-[11px] font-mono text-[#00DDF2] tracking-wider uppercase font-semibold">
+                Por Que Priorizar
+              </span>
+              <h3 className="text-base font-semibold text-white">
+                Veja os sinais que sustentam cada recomendação
+              </h3>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Toda prioridade é acompanhada de evidências públicas, fontes auditadas e cautelas regulatórias claras.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ===================================================
+          4. SECTION 2 — PRODUCT (AVOID CARDS)
+         =================================================== */}
+      <section id="produto" className="py-20 border-t border-[#16264C]/70 bg-[#070F26]/40">
+        <div className="max-w-6xl mx-auto px-4 sm:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+            {/* Left: Short Explanation */}
+            <div className="lg:col-span-5 space-y-4">
+              <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+                Da visão nacional ao detalhe de cada município.
+              </h2>
+              <p className="text-sm text-slate-300 leading-relaxed">
+                Compare, filtre e aprofunde a análise sem depender de dezenas de planilhas e portais separados.
+              </p>
+
+              <div className="pt-2 space-y-2.5 text-xs text-slate-300">
+                <div className="flex items-start gap-2">
+                  <span className="text-[#00DDF2] mt-0.5">•</span>
+                  <span>Filtros combinados por estado, macrorregião, score e janela temporal.</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-[#00DDF2] mt-0.5">•</span>
+                  <span>Ficha Municipal estruturada em finanças, IDEB/SAEB, contratos e governança.</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-[#00DDF2] mt-0.5">•</span>
+                  <span>Organização em pipeline comercial tipo Kanban para abordagem imediata.</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Right: Actual Product Visual Snippet */}
+            <div className="lg:col-span-7 bg-[#0A1329] border border-[#16264C] rounded-xl p-5 space-y-4 shadow-xl">
+              <div className="flex items-center justify-between border-b border-[#16264C] pb-3">
+                <div>
+                  <h3 className="text-sm font-bold text-white">Ficha Municipal · Município Alfa, PA</h3>
+                  <p className="text-[11px] text-slate-400">128.400 habitantes · Região Norte</p>
+                </div>
+                <div className="text-right">
+                  <span className="text-xl font-bold text-[#00DDF2] font-mono-numbers">87</span>
+                  <span className="text-xs text-slate-400">/100</span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                <div className="p-2.5 rounded bg-[#050B1E] border border-[#16264C]">
+                  <span className="text-[10px] text-slate-400 block">RCL Anual</span>
+                  <span className="font-semibold text-white font-mono-numbers">R$ 214,8 M</span>
+                </div>
+                <div className="p-2.5 rounded bg-[#050B1E] border border-[#16264C]">
+                  <span className="text-[10px] text-slate-400 block">Invest. Educação</span>
+                  <span className="font-semibold text-emerald-400 font-mono-numbers">27,8% (LOA)</span>
+                </div>
+                <div className="p-2.5 rounded bg-[#050B1E] border border-[#16264C]">
+                  <span className="text-[10px] text-slate-400 block">IDEB Anos Iniciais</span>
+                  <span className="font-semibold text-white font-mono-numbers">4.8 (meta 5.4)</span>
+                </div>
+                <div className="p-2.5 rounded bg-[#050B1E] border border-[#16264C]">
+                  <span className="text-[10px] text-slate-400 block">Vigência Atual</span>
+                  <span className="font-semibold text-[#00DDF2] font-mono-numbers">Expira em 68d</span>
+                </div>
+              </div>
+
+              <div className="p-3 rounded bg-[#050B1E] border border-[#16264C] text-xs text-slate-300 leading-relaxed">
+                <strong className="text-white">Leitura Harpia:</strong> Alta capacidade fiscal combinada com defasagem nas metas do IDEB e encerramento iminente de contrato de tecnologia educacional contratado em 2024.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ===================================================
+          5. SECTION 3 — SCORE (HORIZONTAL COMPOSITION)
+         =================================================== */}
+      <section id="score-harpia" className="py-20 border-t border-[#16264C]/70">
+        <div className="max-w-6xl mx-auto px-4 sm:px-8 space-y-10">
+          <div className="max-w-2xl space-y-2">
+            <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+              Um score que mostra prioridade — e explica os motivos.
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-300">
+              O Score Harpia consolida 5 dimensões analíticas ponderadas para refletir potencial e momento de contratação.
             </p>
           </div>
 
-          {/* Interactive AI Preview Card */}
-          <div className="max-w-3xl mx-auto p-6 rounded-2xl bg-[#070F26] border border-[#00DDF2]/40 shadow-2xl space-y-4">
-            <div className="flex items-center gap-2 text-xs font-mono text-[#00DDF2]">
-              <Sparkles className="w-4 h-4" />
-              <span>Pergunta Exemplo:</span>
+          {/* One horizontal analytical composition */}
+          <div className="border border-[#16264C] rounded-xl bg-[#0A1329] p-6 lg:p-8">
+            <div className="grid grid-cols-2 md:grid-cols-5 divide-y md:divide-y-0 md:divide-x divide-[#16264C]">
+              <div className="p-4 md:px-5 space-y-1.5">
+                <div className="text-2xl sm:text-3xl font-bold font-mono text-[#00DDF2]">
+                  30 <span className="text-xs font-normal text-slate-400">pts</span>
+                </div>
+                <h3 className="text-xs font-semibold text-white">Capacidade Fiscal</h3>
+                <p className="text-[11px] text-slate-400 leading-snug">
+                  RCL, arrecadação própria e cumprimento dos 25% na educação.
+                </p>
+              </div>
+
+              <div className="p-4 md:px-5 space-y-1.5">
+                <div className="text-2xl sm:text-3xl font-bold font-mono text-white">
+                  25 <span className="text-xs font-normal text-slate-400">pts</span>
+                </div>
+                <h3 className="text-xs font-semibold text-white">Necessidade Educacional</h3>
+                <p className="text-[11px] text-slate-400 leading-snug">
+                  Metas do IDEB, proficiência no SAEB e distorção idade-série.
+                </p>
+              </div>
+
+              <div className="p-4 md:px-5 space-y-1.5">
+                <div className="text-2xl sm:text-3xl font-bold font-mono text-white">
+                  25 <span className="text-xs font-normal text-slate-400">pts</span>
+                </div>
+                <h3 className="text-xs font-semibold text-white">Oportunidade Contratação</h3>
+                <p className="text-[11px] text-slate-400 leading-snug">
+                  Proximidade do fim de contratos vigentes e PCA/LOA.
+                </p>
+              </div>
+
+              <div className="p-4 md:px-5 space-y-1.5">
+                <div className="text-2xl sm:text-3xl font-bold font-mono text-white">
+                  10 <span className="text-xs font-normal text-slate-400">pts</span>
+                </div>
+                <h3 className="text-xs font-semibold text-white">Acesso Institucional</h3>
+                <p className="text-[11px] text-slate-400 leading-snug">
+                  Órgãos e canais oficiais confirmados de dirigentes e secretarias.
+                </p>
+              </div>
+
+              <div className="p-4 md:px-5 space-y-1.5">
+                <div className="text-2xl sm:text-3xl font-bold font-mono text-white">
+                  10 <span className="text-xs font-normal text-slate-400">pts</span>
+                </div>
+                <h3 className="text-xs font-semibold text-white">Governança</h3>
+                <p className="text-[11px] text-slate-400 leading-snug">
+                  Regularidade perante Tribunais de Contas e transparência.
+                </p>
+              </div>
             </div>
 
-            <div className="p-3 rounded-xl bg-[#0A1329] border border-[#16264C] text-sm font-semibold text-white">
-              “Quais municípios apresentam oportunidade nos próximos 90 dias?”
+            <div className="mt-6 pt-4 border-t border-[#16264C] flex flex-col sm:flex-row items-start sm:items-center justify-between text-xs text-slate-400 gap-2">
+              <span>Total: 100 pontos</span>
+              <span>O score apoia a priorização comercial e não representa previsão ou garantia de compra.</span>
             </div>
+          </div>
+        </div>
+      </section>
 
-            {/* Answer Display */}
-            <div className="p-4 rounded-xl bg-[#050B1E] border border-[#16264C] space-y-3 text-xs">
-              <div className="flex items-center justify-between border-b border-[#16264C] pb-2">
-                <span className="font-bold text-white flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                  Conclusão Executiva
+      {/* ===================================================
+          6. SECTION 4 — HARPIA INSIGHTS (ASYMMETRICAL LAYOUT)
+         =================================================== */}
+      <section id="inteligencia" className="py-20 border-t border-[#16264C]/70 bg-[#070F26]/40">
+        <div className="max-w-6xl mx-auto px-4 sm:px-8 space-y-8">
+          <div className="max-w-2xl space-y-2">
+            <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+              Pergunte aos dados.
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-300">
+              Use linguagem natural para comparar municípios, entender oportunidades e identificar pontos que precisam de validação.
+            </p>
+          </div>
+
+          {/* Asymmetrical layout: question on left/top, answer on right/bottom */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+            {/* Real Question Side (5 cols) */}
+            <div className="lg:col-span-5 bg-[#0A1329] border border-[#16264C] rounded-xl p-5 flex flex-col justify-between space-y-4">
+              <div className="space-y-3">
+                <span className="text-[11px] font-mono text-[#00DDF2] uppercase font-semibold">
+                  Consulta Analítica
                 </span>
-                <span className="px-2 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-mono font-bold text-[10px]">
-                  JANELA IMINENTE
+                <p className="text-sm font-medium text-white leading-relaxed">
+                  “Quais municípios combinam alta necessidade educacional e boa capacidade financeira nos próximos 90 dias?”
+                </p>
+              </div>
+
+              <div className="text-[11px] text-slate-400 pt-3 border-t border-[#16264C]">
+                Copiloto analítico consultando bases do Siconfi, INEP e PNCP.
+              </div>
+            </div>
+
+            {/* Real Harpia Insights Answer Side (7 cols) */}
+            <div className="lg:col-span-7 bg-[#050B1E] border border-[#16264C] rounded-xl p-5 space-y-3 text-xs">
+              <div className="flex items-center justify-between border-b border-[#16264C] pb-2">
+                <span className="font-semibold text-white">Conclusão</span>
+                <span className="text-[10px] font-mono text-[#00DDF2] font-semibold">
+                  Janela Imediata
                 </span>
               </div>
 
               <p className="text-slate-200 leading-relaxed">
-                Município Alfa (PA) lidera a janela imediata com contrato de software de gestão educacional expirando em 68 dias e superávit financeiro de R$ 14,2M. Município Beta (SP) tramita renovação no PCA.
+                Município Alfa (PA) apresenta superávit financeiro de R$ 14,2M, aplicação de 27,8% em educação e contrato vigente de sistema educacional expirando em 68 dias. IDEB em 4.8 aponta necessidade de recomposição.
               </p>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                <div className="space-y-1">
-                  <span className="text-[10px] font-bold text-emerald-400 uppercase">Sinais Favoráveis:</span>
-                  <ul className="text-slate-300 space-y-0.5 list-disc list-inside text-[11px]">
-                    <li>Contrato vigente com vigência até 12/04</li>
-                    <li>Aplicação constitucional em 27,8%</li>
-                  </ul>
+              <div className="pt-2 border-t border-[#16264C]/60 grid grid-cols-1 sm:grid-cols-2 gap-3 text-[11px]">
+                <div>
+                  <span className="text-slate-400 block font-medium">Sinais objetivos:</span>
+                  <span className="text-slate-300">Contrato próximo do término; disponibilidade de caixa confirmada.</span>
                 </div>
-                <div className="space-y-1">
-                  <span className="text-[10px] font-bold text-amber-400 uppercase">Cautelas:</span>
-                  <ul className="text-slate-300 space-y-0.5 list-disc list-inside text-[11px]">
-                    <li>Validação formal do termo de referência</li>
-                    <li>Ano eleitoral com prazos estritos</li>
-                  </ul>
+                <div>
+                  <span className="text-slate-400 block font-medium">Pontos de cautela:</span>
+                  <span className="text-slate-300">Ano eleitoral com restrições orçamentárias nos últimos 120 dias.</span>
                 </div>
               </div>
 
-              <div className="pt-2 border-t border-[#16264C] flex items-center justify-between text-[10.5px] text-slate-400">
-                <span>Fontes: PNCP, Siconfi, INEP Censo Escolar</span>
-                <span className="font-mono text-emerald-400 font-bold">Confiança Alta (92%)</span>
+              <div className="pt-2 border-t border-[#16264C]/60 flex items-center justify-between text-[10.5px] text-slate-400 font-mono">
+                <span>Fontes: Siconfi, PNCP, INEP</span>
+                <span>Confiança Alta</span>
               </div>
             </div>
           </div>
@@ -501,147 +504,80 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
       </section>
 
       {/* ===================================================
-          7. SECTION — PRODUCT FEATURES
-         =================================================== */}
-      <section id="produto" className="py-20 border-t border-[#16264C]/70 bg-[#070F26]/60">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-          <div className="text-center max-w-2xl mx-auto space-y-3">
-            <span className="text-xs font-mono text-[#00DDF2] uppercase tracking-wider">
-              Módulos da Plataforma
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
-              Tudo o que sua equipe precisa para vencer em B2G
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
-            <div className="p-5 rounded-2xl bg-[#0A1329] border border-[#16264C] hover:border-[#00DDF2]/50 transition-all space-y-2">
-              <div className="w-8 h-8 rounded-lg bg-[#00DDF2]/15 text-[#00DDF2] flex items-center justify-center font-bold">
-                <Search className="w-4 h-4" />
-              </div>
-              <h3 className="text-sm font-bold text-white">Radar de Municípios</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Tabela dinâmica com filtros cruzados por UF, score, janela de contratação e exportação em CSV.
-              </p>
-            </div>
-
-            <div className="p-5 rounded-2xl bg-[#0A1329] border border-[#16264C] hover:border-[#00DDF2]/50 transition-all space-y-2">
-              <div className="w-8 h-8 rounded-lg bg-[#00DDF2]/15 text-[#00DDF2] flex items-center justify-center font-bold">
-                <MapPin className="w-4 h-4" />
-              </div>
-              <h3 className="text-sm font-bold text-white">Mapa de Oportunidades</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Navegação vetorial pelos 26 estados + DF com intensidade de oportunidades e filtros por macrorregião.
-              </p>
-            </div>
-
-            <div className="p-5 rounded-2xl bg-[#0A1329] border border-[#16264C] hover:border-[#00DDF2]/50 transition-all space-y-2">
-              <div className="w-8 h-8 rounded-lg bg-[#00DDF2]/15 text-[#00DDF2] flex items-center justify-center font-bold">
-                <FileText className="w-4 h-4" />
-              </div>
-              <h3 className="text-sm font-bold text-white">Ficha Municipal</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Raio-X completo em 7 abas com IDEB, finanças, compras anteriores, contatos de dirigentes e governança.
-              </p>
-            </div>
-
-            <div className="p-5 rounded-2xl bg-[#0A1329] border border-[#16264C] hover:border-[#00DDF2]/50 transition-all space-y-2">
-              <div className="w-8 h-8 rounded-lg bg-[#00DDF2]/15 text-[#00DDF2] flex items-center justify-center font-bold">
-                <Sparkles className="w-4 h-4" />
-              </div>
-              <h3 className="text-sm font-bold text-white">Harpia Insights</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Copiloto de decisão comercial acionado por IA em linguagem natural para cruzar teses e comparar municípios.
-              </p>
-            </div>
-
-            <div className="p-5 rounded-2xl bg-[#0A1329] border border-[#16264C] hover:border-[#00DDF2]/50 transition-all space-y-2">
-              <div className="w-8 h-8 rounded-lg bg-[#00DDF2]/15 text-[#00DDF2] flex items-center justify-center font-bold">
-                <Activity className="w-4 h-4" />
-              </div>
-              <h3 className="text-sm font-bold text-white">Monitoramento</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Watchlist dedicada com notificações de mudanças em contratos, publicações no PNCP e recálculo de scores.
-              </p>
-            </div>
-
-            <div className="p-5 rounded-2xl bg-[#0A1329] border border-[#16264C] hover:border-[#00DDF2]/50 transition-all space-y-2">
-              <div className="w-8 h-8 rounded-lg bg-[#00DDF2]/15 text-[#00DDF2] flex items-center justify-center font-bold">
-                <Layers className="w-4 h-4" />
-              </div>
-              <h3 className="text-sm font-bold text-white">Pipeline B2G</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Fluxo Kanban estruturado em Abordagem Imediata, Relacionamento Institucional e Acompanhamento.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ===================================================
-          8. SECTION — BENEFITS
+          7. SECTION 5 — COMMERCIAL VALUE (EDITORIAL TYPOGRAPHY)
          =================================================== */}
       <section id="beneficios" className="py-20 border-t border-[#16264C]/70">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-          <div className="text-center max-w-2xl mx-auto space-y-3">
-            <span className="text-xs font-mono text-[#00DDF2] uppercase tracking-wider">
-              Resultados Comerciais
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
-              Mais inteligência para sua estratégia B2G
+        <div className="max-w-6xl mx-auto px-4 sm:px-8 space-y-12">
+          <div className="max-w-3xl space-y-3">
+            <h2 className="text-2xl sm:text-4xl font-bold text-white tracking-tight leading-snug">
+              Menos tempo procurando informação. Mais tempo atuando onde existe oportunidade.
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              'Priorize melhor sua equipe comercial',
-              'Identifique o momento adequado de abordagem',
-              'Reduza dias de pesquisa manual',
-              'Centralize informações dispersas',
-              'Explique decisões comerciais com evidências',
-              'Monitore oportunidades estratégicas continuamente',
-            ].map((beneficio, i) => (
-              <div
-                key={i}
-                className="p-5 rounded-xl bg-[#0A1329] border border-[#16264C] flex items-start gap-3"
-              >
-                <div className="w-6 h-6 rounded-full bg-[#00DDF2]/15 border border-[#00DDF2]/40 flex items-center justify-center text-[#00DDF2] shrink-0 mt-0.5">
-                  <Check className="w-3.5 h-3.5" />
-                </div>
-                <span className="text-xs sm:text-sm font-semibold text-slate-200">
-                  {beneficio}
-                </span>
-              </div>
-            ))}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-4 border-t border-[#16264C]/40">
+            <div className="space-y-2">
+              <span className="text-xs font-mono font-bold text-white tracking-wider">
+                01 · PRIORIZAÇÃO
+              </span>
+              <h3 className="text-sm font-semibold text-white">
+                Direcione o esforço comercial
+              </h3>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Evite abordar municípios sem capacidade orçamentária ou sem demanda real de tecnologia educacional.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <span className="text-xs font-mono font-bold text-white tracking-wider">
+                02 · TIMING
+              </span>
+              <h3 className="text-sm font-semibold text-white">
+                Aborde no momento mais adequado
+              </h3>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Identifique certames antes da publicação do edital, no período de planejamento da LOA e elaboração do termo de referência.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <span className="text-xs font-mono font-bold text-white tracking-wider">
+                03 · CONTEXTO
+              </span>
+              <h3 className="text-sm font-semibold text-white">
+                Chegue à conversa sabendo o que importa
+              </h3>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Conheça os dados de aprendizagem da rede e os contratos anteriores para propor soluções fundamentadas.
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
       {/* ===================================================
-          9. FINAL CTA SECTION
+          8. RESTRAINED FINAL CTA
          =================================================== */}
-      <section className="py-24 border-t border-[#16264C]/80 bg-gradient-to-b from-[#070F26] to-[#050B1E]">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center space-y-6">
-          <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
+      <section className="py-20 border-t border-[#16264C]/70 bg-[#070F26]/30">
+        <div className="max-w-4xl mx-auto px-4 sm:px-8 text-center space-y-5">
+          <h2 className="text-2xl sm:text-4xl font-bold text-white tracking-tight">
             Encontre as oportunidades antes de começar a procurar.
           </h2>
 
-          <p className="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-xs sm:text-sm text-slate-300 max-w-xl mx-auto leading-relaxed">
             Conheça como a Harpia pode transformar dados públicos em inteligência comercial para sua empresa.
           </p>
 
-          <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3.5">
+          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
             <button
               onClick={() => setDemoModalOpen(true)}
-              className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-[#00DDF2] text-[#050B1E] font-bold text-sm hover:bg-[#5beaff] transition-all shadow-[0_0_25px_rgba(0,221,242,0.35)] flex items-center justify-center gap-2"
+              className="px-6 py-2.5 rounded-lg bg-[#00DDF2] text-[#050B1E] font-bold text-xs hover:bg-[#5beaff] transition-colors"
             >
-              <span>SOLICITAR DEMONSTRAÇÃO</span>
-              <ArrowRight className="w-4 h-4" />
+              SOLICITAR DEMONSTRAÇÃO
             </button>
 
             <button
               onClick={onNavigateApp}
-              className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-[#0F1C3C] hover:bg-[#16264C] text-white font-semibold text-sm border border-[#16264C] transition-colors"
+              className="px-6 py-2.5 rounded-lg bg-[#0F1C3C] hover:bg-[#16264C] text-slate-200 hover:text-white font-medium text-xs border border-[#16264C] transition-colors"
             >
               ENTRAR NA PLATAFORMA
             </button>
@@ -650,9 +586,9 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
       </section>
 
       {/* ===================================================
-          10. FOOTER
+          9. FOOTER
          =================================================== */}
-      <footer className="border-t border-[#16264C] bg-[#050B1E] py-10 px-4 sm:px-8">
+      <footer className="border-t border-[#16264C] bg-[#050B1E] py-8 px-4 sm:px-8">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
           <div className="flex items-center gap-3">
             <HarpiaLogo collapsed={false} />
@@ -660,7 +596,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
             <span>Inteligência B2G para Educação</span>
           </div>
 
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-6 text-[11px]">
             <span>Privacidade & Governança</span>
             <span>Termos de Uso</span>
             <span className="font-mono text-slate-400">© 2026 HARPIA TECH</span>
@@ -669,11 +605,11 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
       </footer>
 
       {/* ===================================================
-          DEMO REQUEST MODAL
+          SOLICITAR DEMONSTRAÇÃO MODAL
          =================================================== */}
       {demoModalOpen && (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-[#050B1E]/85 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="w-full max-w-md bg-[#0A1329] border border-[#00DDF2]/50 rounded-2xl shadow-2xl p-6 relative">
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-[#050B1E]/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="w-full max-w-md bg-[#0A1329] border border-[#16264C] rounded-xl shadow-2xl p-6 relative">
             <button
               onClick={() => setDemoModalOpen(false)}
               className="absolute top-4 right-4 text-slate-400 hover:text-white"
@@ -682,13 +618,13 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
             </button>
 
             {demoSubmitted ? (
-              <div className="py-8 text-center space-y-3 animate-in fade-in">
-                <div className="w-12 h-12 rounded-full bg-emerald-500/15 border border-emerald-500/40 text-emerald-400 flex items-center justify-center mx-auto">
-                  <Check className="w-6 h-6" />
+              <div className="py-6 text-center space-y-2">
+                <div className="w-10 h-10 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center mx-auto">
+                  <Check className="w-5 h-5" />
                 </div>
-                <h3 className="text-base font-bold text-white">Solicitação Recebida</h3>
+                <h3 className="text-sm font-bold text-white">Solicitação Recebida</h3>
                 <p className="text-xs text-slate-300">
-                  Nossa equipe de inteligência B2G entrará em contato em breve para apresentar a plataforma com seus municípios de interesse.
+                  Nossa equipe entrará em contato em breve para apresentar a plataforma com os seus municípios de interesse.
                 </p>
               </div>
             ) : (
@@ -696,7 +632,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
                 <div className="space-y-1">
                   <h3 className="text-base font-bold text-white">Solicitar Demonstração</h3>
                   <p className="text-xs text-slate-400">
-                    Preencha os dados abaixo para receber uma demonstração personalizada da Harpia Tech.
+                    Apresentação executiva adaptada ao segmento da sua empresa.
                   </p>
                 </div>
 
@@ -708,8 +644,8 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
                       required
                       value={demoForm.nome}
                       onChange={(e) => setDemoForm({ ...demoForm, nome: e.target.value })}
-                      placeholder="Ex: Carlos Mendes"
-                      className="w-full px-3 py-2 rounded-xl bg-[#050B1E] border border-[#16264C] text-white focus:outline-none focus:border-[#00DDF2]"
+                      placeholder="Seu nome"
+                      className="w-full px-3 py-2 rounded-lg bg-[#050B1E] border border-[#16264C] text-white focus:outline-none focus:border-[#00DDF2]"
                     />
                   </div>
 
@@ -720,8 +656,8 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
                       required
                       value={demoForm.email}
                       onChange={(e) => setDemoForm({ ...demoForm, email: e.target.value })}
-                      placeholder="carlos@empresa.com.br"
-                      className="w-full px-3 py-2 rounded-xl bg-[#050B1E] border border-[#16264C] text-white focus:outline-none focus:border-[#00DDF2]"
+                      placeholder="nome@empresa.com.br"
+                      className="w-full px-3 py-2 rounded-lg bg-[#050B1E] border border-[#16264C] text-white focus:outline-none focus:border-[#00DDF2]"
                     />
                   </div>
 
@@ -732,8 +668,8 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
                       required
                       value={demoForm.empresa}
                       onChange={(e) => setDemoForm({ ...demoForm, empresa: e.target.value })}
-                      placeholder="Nome da sua EdTech ou editora"
-                      className="w-full px-3 py-2 rounded-xl bg-[#050B1E] border border-[#16264C] text-white focus:outline-none focus:border-[#00DDF2]"
+                      placeholder="Nome da sua EdTech ou organização"
+                      className="w-full px-3 py-2 rounded-lg bg-[#050B1E] border border-[#16264C] text-white focus:outline-none focus:border-[#00DDF2]"
                     />
                   </div>
 
@@ -745,7 +681,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
                       value={demoForm.telefone}
                       onChange={(e) => setDemoForm({ ...demoForm, telefone: e.target.value })}
                       placeholder="(11) 98765-4321"
-                      className="w-full px-3 py-2 rounded-xl bg-[#050B1E] border border-[#16264C] text-white focus:outline-none focus:border-[#00DDF2]"
+                      className="w-full px-3 py-2 rounded-lg bg-[#050B1E] border border-[#16264C] text-white focus:outline-none focus:border-[#00DDF2]"
                     />
                   </div>
                 </div>
@@ -754,13 +690,13 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
                   <button
                     type="button"
                     onClick={() => setDemoModalOpen(false)}
-                    className="px-4 py-2 text-xs font-medium text-slate-400 hover:text-white"
+                    className="px-3 py-1.5 text-xs text-slate-400 hover:text-white"
                   >
                     Cancelar
                   </button>
                   <button
                     type="submit"
-                    className="px-5 py-2 rounded-xl bg-[#00DDF2] text-[#050B1E] text-xs font-bold hover:bg-[#5beaff] transition-all shadow-[0_0_12px_rgba(0,221,242,0.3)]"
+                    className="px-4 py-1.5 rounded-lg bg-[#00DDF2] text-[#050B1E] text-xs font-bold hover:bg-[#5beaff] transition-colors"
                   >
                     Confirmar Envio
                   </button>

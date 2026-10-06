@@ -8,6 +8,26 @@ export type ConfidenceLevel = 'Alta' | 'Média' | 'Baixa';
 
 export type PipelineStage = 'A_IMEDIATA' | 'B_RELACIONAMENTO' | 'C_MONITORAMENTO';
 
+export interface HarpiaSignal {
+  id: string;
+  municipioId: string;
+  municipioNome?: string;
+  uf?: string;
+  tipo:
+    | 'OPORTUNIDADE'
+    | 'MUDANCA_PRIORIDADE'
+    | 'NOVA_PUBLICACAO'
+    | 'ATENCAO'
+    | 'DADOS_ATUALIZADOS';
+  titulo: string;
+  descricao: string;
+  data: string;
+  impacto: 'Alto' | 'Médio' | 'Baixo';
+  scoreAntes?: number;
+  scoreDepois?: number;
+  acaoRecomendada: string;
+}
+
 export interface ScoreBreakdown {
   fiscal: number;       // Max 30 pts (Capacidade fiscal e financeira)
   educacao: number;     // Max 25 pts (Necessidade educacional)
@@ -122,13 +142,17 @@ export interface Municipality {
   pipelineStage: PipelineStage;
   janela: ContractingWindow;
   
-  // Executive Reading
+  // Commercial Action Reading & Institutional Path
   leituraHarpia: {
     resumo: string;
     sinaisFavoraveis: string[];
     cautelas: string[];
     proximaAcao: string;
   };
+  principalSinal?: string;
+  motivoPrincipal?: string;
+  melhorMomento?: string;
+  canalSugeridoPrimeiroContato?: string;
 
   financeiro: FinancialData;
   educacao: EducationData;
