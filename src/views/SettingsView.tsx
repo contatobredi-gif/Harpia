@@ -76,7 +76,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             <input
               type="text"
               readOnly
-              value="Harpia Enterprise B2G · 5.572 Municípios"
+              value="Harpia Enterprise B2G · Acesso Corporativo"
               className="w-full px-3 py-2 rounded-lg bg-[#050B1E] border border-[#16264C] text-[#00DDF2] cursor-not-allowed font-semibold"
             />
           </div>
@@ -192,9 +192,9 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 
           <div className="flex items-center justify-between py-2">
             <div>
-              <span className="text-white font-medium block">Alertar sobre novos atos no PNCP</span>
+              <span className="text-white font-medium block">Simular alertas de novos atos no PNCP</span>
               <span className="text-slate-400 text-[11px]">
-                Sinalizar avisos de chamamento público e termos de referência educacionais
+                Sinalizar avisos de chamamento público e termos de referência na esteira do Radar
               </span>
             </div>
             <input

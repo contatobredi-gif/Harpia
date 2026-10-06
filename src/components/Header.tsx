@@ -17,7 +17,7 @@ const TAB_TITLES: Record<NavTab, { section: string; title: string }> = {
   'radar': { section: 'Inteligência Comercial', title: 'Radar de Municípios' },
   'mapa': { section: 'Geolocalização B2G', title: 'Mapa de Oportunidades' },
   'oportunidades': { section: 'Funil Comercial', title: 'Pipeline de Oportunidades' },
-  'monitoramento': { section: 'Watchlist & Alertas', title: 'Monitoramento Contínuo' },
+  'monitoramento': { section: 'Acompanhamento Comercial', title: 'Radar de Acompanhamento' },
   'insights': { section: 'Copiloto de Decisão', title: 'Harpia Insights' },
   'fontes': { section: 'Bases de Referência Previstas', title: 'Central de Fontes' },
   'configuracoes': { section: 'Sistema', title: 'Configurações & Parâmetros' },

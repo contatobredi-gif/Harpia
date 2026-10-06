@@ -351,7 +351,7 @@ export const HELP_KNOWLEDGE_BASE: HelpTopic[] = [
     steps: [
       'Abra esta Central de Ajuda e clique no botão "REINICIAR TUTORIAL".',
       'Ou vá em Configurações no menu lateral e clique em "Tutorial da Plataforma".',
-      'O tour guiará você por 12 telas e recursos com destaques visuais em tempo real.',
+      'O tour guiará você pelos passos essenciais com destaques contextuais na própria interface.',
     ],
     relatedScreen: 'configuracoes',
     actionLabel: 'REINICIAR TUTORIAL AGORA',

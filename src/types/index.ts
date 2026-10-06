@@ -171,7 +171,7 @@ export interface PublicDataSource {
   nome: string;
   categoria: 'Fiscal' | 'Educação' | 'Compras';
   descricao: string;
-  status: 'Operacional' | 'Sincronizado' | 'Em atualização';
+  status: 'Operacional' | 'Modelado' | 'Previsto';
   ultimaAtualizacao: string;
   cobertura: string;
   confiabilidade: 'Muito Alta' | 'Alta' | 'Oficial';

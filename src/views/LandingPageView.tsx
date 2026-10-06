@@ -152,11 +152,11 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
                 <div className="flex items-center gap-3">
                   <span className="text-xs font-semibold text-white">Radar de Municípios</span>
                   <span className="text-slate-500 text-xs">/</span>
-                  <span className="text-[11px] text-slate-400 font-mono">5.572 analisados</span>
+                  <span className="text-[11px] text-slate-400 font-mono">Base Demonstrativa MVP</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="px-2 py-0.5 rounded bg-[#16264C] text-[10px] text-[#00DDF2] font-mono font-medium">
-                    0–90 dias: 48
+                    Janela Imediata: 0–90 dias
                   </span>
                 </div>
               </div>
@@ -191,6 +191,19 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
                       <td className="py-3 px-4 font-semibold text-white">Município Beta</td>
                       <td className="py-3 px-3 font-mono text-slate-400">SP</td>
                       <td className="py-3 px-3 text-center">
+                        <span className="font-mono font-bold text-white">82</span>
+                      </td>
+                      <td className="py-3 px-3 text-slate-300">0–90 dias</td>
+                      <td className="py-3 px-4">
+                        <span className="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-400 font-semibold text-[10px] border border-emerald-500/30">
+                          Imediata
+                        </span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="py-3 px-4 font-semibold text-white">Município Gama</td>
+                      <td className="py-3 px-3 font-mono text-slate-400">MG</td>
+                      <td className="py-3 px-3 text-center">
                         <span className="font-mono font-bold text-white">79</span>
                       </td>
                       <td className="py-3 px-3 text-slate-300">91–180 dias</td>
@@ -201,28 +214,15 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
                       </td>
                     </tr>
                     <tr>
-                      <td className="py-3 px-4 font-semibold text-white">Município Gama</td>
-                      <td className="py-3 px-3 font-mono text-slate-400">MG</td>
-                      <td className="py-3 px-3 text-center">
-                        <span className="font-mono font-bold text-white">72</span>
-                      </td>
-                      <td className="py-3 px-3 text-slate-300">181–365 dias</td>
-                      <td className="py-3 px-4">
-                        <span className="px-2 py-0.5 rounded bg-indigo-500/15 text-indigo-300 font-semibold text-[10px] border border-indigo-500/30">
-                          Estratégica
-                        </span>
-                      </td>
-                    </tr>
-                    <tr>
                       <td className="py-3 px-4 font-semibold text-white">Município Delta</td>
                       <td className="py-3 px-3 font-mono text-slate-400">PR</td>
                       <td className="py-3 px-3 text-center">
-                        <span className="font-mono font-bold text-white">68</span>
+                        <span className="font-mono font-bold text-white">74</span>
                       </td>
-                      <td className="py-3 px-3 text-slate-400">Sem sinal</td>
+                      <td className="py-3 px-3 text-slate-300">91–180 dias</td>
                       <td className="py-3 px-4">
-                        <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-medium text-[10px]">
-                          Monitorar
+                        <span className="px-2 py-0.5 rounded bg-[#00DDF2]/15 text-[#00DDF2] font-semibold text-[10px] border border-[#00DDF2]/30">
+                          Próxima
                         </span>
                       </td>
                     </tr>
@@ -247,7 +247,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
         <div className="max-w-6xl mx-auto px-4 sm:px-8 space-y-12">
           <div className="max-w-3xl">
             <h2 className="text-2xl sm:text-4xl font-bold text-white tracking-tight leading-snug">
-              5.572 municípios. Milhares de sinais. Uma leitura objetiva de prioridade.
+              Múltiplos sinais públicos. Uma leitura objetiva de prioridade comercial.
             </h2>
           </div>
 
@@ -284,7 +284,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
                 Veja os sinais que sustentam cada recomendação
               </h3>
               <p className="text-xs text-slate-300 leading-relaxed">
-                Toda prioridade é acompanhada de evidências públicas, fontes auditadas e cautelas regulatórias claras.
+                Toda prioridade é acompanhada de evidências públicas, fontes de referência oficiais e cautelas regulatórias claras.
               </p>
             </div>
           </div>
@@ -466,7 +466,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
               </div>
 
               <div className="text-[11px] text-slate-400 pt-3 border-t border-[#16264C]">
-                Copiloto analítico consultando bases do Siconfi, INEP e PNCP.
+                Copiloto analítico baseado em modelagem e dados de referência públicos (Siconfi, INEP e PNCP).
               </div>
             </div>
 
@@ -495,7 +495,7 @@ export const LandingPageView: React.FC<LandingPageViewProps> = ({
               </div>
 
               <div className="pt-2 border-t border-[#16264C]/60 flex items-center justify-between text-[10.5px] text-slate-400 font-mono">
-                <span>Fontes: Siconfi, PNCP, INEP</span>
+                <span>Fontes de referência: Siconfi, PNCP, INEP</span>
                 <span>Confiança Alta</span>
               </div>
             </div>

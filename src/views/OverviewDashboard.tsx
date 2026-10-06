@@ -64,6 +64,21 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
   // Main 7 simulated signals
   const primarySignals = HARPIA_SIGNALS.filter((s) => !s.id.startsWith('sig-hist'));
 
+  // Commercial decision counts calculated strictly from current MVP dataset
+  const immediateCount = municipalities.filter(
+    (m) => m.pipelineStage === 'A_IMEDIATA' || m.janela === '0–90 dias'
+  ).length;
+
+  const relationshipCount = municipalities.filter(
+    (m) => m.pipelineStage === 'B_RELACIONAMENTO'
+  ).length;
+
+  const monitoringCount = municipalities.filter(
+    (m) => m.isMonitored || m.pipelineStage === 'C_MONITORAMENTO'
+  ).length;
+
+  const newSignalsCount = primarySignals.length;
+
   const filteredSignals = primarySignals.filter((signal) => {
     if (signalFilter === 'TODOS') return true;
     if (signalFilter === 'OPORTUNIDADE') return signal.tipo === 'OPORTUNIDADE';
@@ -114,7 +129,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
           <div className="flex items-center gap-2 self-start sm:self-center">
             <span className="px-3 py-1 rounded-lg bg-[#0A1329] border border-[#16264C] text-[11px] font-semibold text-slate-300 flex items-center gap-1.5">
               <Clock className="w-3.5 h-3.5 text-[#00DDF2]" />
-              Atualização em tempo real (PNCP · Siconfi · DOMs)
+              Simulação com fontes de referência: PNCP · Siconfi · Diários Oficiais
             </span>
           </div>
         </div>
@@ -138,15 +153,15 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
               </div>
               <div className="my-2 flex items-baseline gap-2">
                 <span className="text-3xl sm:text-4xl font-black text-white font-mono-numbers">
-                  12
+                  {immediateCount}
                 </span>
-                <span className="text-xs text-emerald-400 font-semibold font-mono-numbers">
-                  ({immediateOpps} na amostra prioritária)
+                <span className="text-xs text-emerald-400 font-semibold">
+                  municípios prioritários
                 </span>
               </div>
             </div>
             <div className="pt-2 border-t border-[#16264C]/70 flex items-center justify-between text-[11px] text-slate-400">
-              <span className="truncate">Contratos a vencer e PCA no PNCP</span>
+              <span className="truncate">Base demonstrativa atual</span>
               <ChevronRight className="w-4 h-4 text-emerald-400 group-hover:translate-x-1 transition-transform shrink-0" />
             </div>
           </div>
@@ -168,15 +183,15 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
               </div>
               <div className="my-2 flex items-baseline gap-2">
                 <span className="text-3xl sm:text-4xl font-black text-white font-mono-numbers">
-                  31
+                  {relationshipCount}
                 </span>
-                <span className="text-xs text-[#00DDF2] font-semibold font-mono-numbers">
-                  ({win91180} em nutrição ativa)
+                <span className="text-xs text-[#00DDF2] font-semibold">
+                  em nutrição ativa
                 </span>
               </div>
             </div>
             <div className="pt-2 border-t border-[#16264C]/70 flex items-center justify-between text-[11px] text-slate-400">
-              <span className="truncate">Orçamento LOA em consolidação</span>
+              <span className="truncate">Base demonstrativa atual</span>
               <ChevronRight className="w-4 h-4 text-[#00DDF2] group-hover:translate-x-1 transition-transform shrink-0" />
             </div>
           </div>
@@ -198,15 +213,15 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
               </div>
               <div className="my-2 flex items-baseline gap-2">
                 <span className="text-3xl sm:text-4xl font-black text-white font-mono-numbers">
-                  48
+                  {monitoringCount}
                 </span>
-                <span className="text-xs text-amber-400 font-semibold font-mono-numbers">
-                  ({inWatchlist} na sua watchlist)
+                <span className="text-xs text-amber-400 font-semibold">
+                  acompanhados
                 </span>
               </div>
             </div>
             <div className="pt-2 border-t border-[#16264C]/70 flex items-center justify-between text-[11px] text-slate-400">
-              <span className="truncate">Rastreio de aditivos e editais</span>
+              <span className="truncate">Base demonstrativa atual</span>
               <ChevronRight className="w-4 h-4 text-amber-400 group-hover:translate-x-1 transition-transform shrink-0" />
             </div>
           </div>
@@ -220,20 +235,20 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
                   Novos Sinais
                 </span>
                 <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
-                  Últimas 48h
+                  Simulados
                 </span>
               </div>
               <div className="my-2 flex items-baseline gap-2">
                 <span className="text-3xl sm:text-4xl font-black text-white font-mono-numbers">
-                  7
+                  {newSignalsCount}
                 </span>
                 <span className="text-xs text-indigo-300 font-semibold">
-                  eventos públicos detectados
+                  sinais simulados
                 </span>
               </div>
             </div>
             <div className="pt-2 border-t border-[#16264C]/70 flex items-center justify-between text-[11px] text-slate-400">
-              <span className="truncate">Movimentações de score e ETP</span>
+              <span className="truncate">Base demonstrativa atual</span>
               <Sparkles className="w-4 h-4 text-indigo-400 shrink-0" />
             </div>
           </div>
@@ -640,19 +655,19 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
           Métricas de Base & Cobertura da Plataforma
         </h3>
         <div id="dashboard-overview-cards" className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-          {/* Card 1: Municípios monitorados */}
+          {/* Card 1: Base demonstrativa */}
           <div className="p-4 rounded-xl bg-[#0A1329] border border-[#16264C] flex flex-col justify-between">
             <div className="flex items-center justify-between text-xs text-slate-400">
-              <span className="truncate">Municípios monitorados</span>
+              <span className="truncate">Base demonstrativa</span>
               <Building2 className="w-4 h-4 text-slate-400 shrink-0" />
             </div>
             <div className="my-2">
               <span className="text-2xl font-extrabold text-white font-mono-numbers">
-                5.572
+                {totalMonitoredDemo}
               </span>
             </div>
             <div className="flex items-center gap-1 text-[11px] text-slate-400">
-              <span className="text-[#00DDF2] font-semibold">{totalMonitoredDemo}</span> em análise ativa
+              <span className="text-[#00DDF2] font-semibold">{totalMonitoredDemo} municípios</span> na amostra
             </div>
           </div>
 
@@ -674,8 +689,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
               </span>
             </div>
             <div className="flex items-center gap-1 text-[11px] text-emerald-400">
-              <ArrowUpRight className="w-3.5 h-3.5" />
-              <span>+18.4% este mês</span>
+              <span>Janela crítica imediata</span>
             </div>
           </div>
 
@@ -735,9 +749,8 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
               </span>
               <span className="text-xs text-slate-400 font-mono-numbers">/100</span>
             </div>
-            <div className="flex items-center gap-1 text-[11px] text-emerald-400">
-              <ArrowUpRight className="w-3.5 h-3.5" />
-              <span>+3.2 pts vs anterior</span>
+            <div className="flex items-center gap-1 text-[11px] text-[#00DDF2]">
+              <span>Média da amostra demonstrativa</span>
             </div>
           </div>
 

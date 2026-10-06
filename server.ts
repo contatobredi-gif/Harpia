@@ -18,7 +18,7 @@ const MODEL_CANDIDATES = ['gemini-3.8-flash', 'gemini-3.1-flash-lite', 'gemini-f
 
 // POST /api/insights — Real Gemini integration for Harpia Insights
 app.post('/api/insights', async (req, res) => {
-  const { question, dataset } = req.body;
+  const { question, dataset, signals } = req.body;
 
   if (!question || typeof question !== 'string') {
     return res.status(400).json({
@@ -72,10 +72,13 @@ REGRAS ABSOLUTAS E MANDATÓRIAS:
     const userPrompt = `PERGUNTA DO USUÁRIO:
 "${question}"
 
-DATASET DEMONSTRATIVO DISPONÍVEL NA PLATAFORMA:
+SINAIS HARPIA RECENTES IDENTIFICADOS NA PLATAFORMA (RADAR DE SINAIS):
+${JSON.stringify(signals || [], null, 2)}
+
+DATASET DEMONSTRATIVO DE MUNICÍPIOS DISPONÍVEL NA PLATAFORMA:
 ${JSON.stringify(dataset || [], null, 2)}
 
-Analise a pergunta com base exclusiva nos dados acima e na metodologia da Harpia Tech.`;
+Analise a pergunta com base exclusiva nos dados acima (municípios e sinais Harpia) e na metodologia da Harpia Tech. Se a pergunta mencionar novos sinais, alertas, recálculos ou movimentações recentes, cite diretamente os Sinais Harpia correspondentes.`;
 
     let lastError: any = null;
     let responseText: string | undefined = undefined;
@@ -206,13 +209,13 @@ ESTRUTURA DA PLATAFORMA HARPIA TECH:
 2. Radar de Municípios (/app/radar): Tabela avançada para pesquisar municípios, filtrar por UF, Região, Score Mínimo, Janela de Contratação e Nível de Confiança, ordenar colunas e exportar CSV. Clicar em qualquer linha abre a Ficha Municipal.
 3. Mapa de Oportunidades (/app/mapa): Mapa vetorial interativo do Brasil para visualizar a intensidade e distribuição geográfica por estado e região. Clicar em um estado filtra os municípios.
 4. Pipeline / Oportunidades (/app/oportunidades): Kanban comercial estruturado em Abordagem Imediata (0-90 dias), Relacionamento (91-180 dias) e Monitoramento (181-365 dias). Permite mover cards entre colunas.
-5. Monitoramento / Watchlist (/app/monitoramento): Lista de acompanhamento de municípios favoritados pelo usuário com histórico de atualizações e sinais detectados.
+5. Monitoramento / Watchlist (/app/monitoramento): Radar de acompanhamento comercial de municípios sob observação, com histórico de evolução e sinais detectados.
 6. Harpia Insights (/app/insights): Copiloto analítico onde o usuário faz perguntas em linguagem natural para analisar as oportunidades e municípios.
 7. Central de Fontes (/app/fontes): Catálogo de bases de dados de referência (Siconfi, PNCP, INEP, TCE, FNDE, etc.).
 8. Configurações (/app/configuracoes): Ajustes da conta, parâmetros do Score Harpia, pesos das dimensões, reiniciar dados e reiniciar o Tutorial Guiado.
 9. Ficha Municipal: Modal completo aberto ao clicar em um município, contendo abas Visão Geral, Financeiro, Educação, Compras Públicas, Acesso Institucional, Governança e Fontes. Possui botão para favoritar/adicionar ao monitoramento e exportar dossiê PDF.
 10. Busca Global (⌘K): Modal para buscar rapidamente municípios e atalhos por digitação.
-11. Tutorial Guiado: Tour interativo de 12 etapas com destaque em tela disponível nas configurações e na Central de Ajuda.
+11. Tutorial Guiado: Tour interativo essencial de 8 etapas com destaque fluido e contextual disponível nas configurações e na Central de Ajuda.
 
 METODOLOGIA DO SCORE HARPIA:
 Total de 0 a 100 pontos dividido em 5 dimensões:

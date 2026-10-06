@@ -1,4 +1,5 @@
-import { Municipality } from '../types';
+import { Municipality, HarpiaSignal } from '../types';
+import { HARPIA_SIGNALS } from '../data/harpiaSignals';
 
 export interface InsightResponse {
   conclusao: string;
@@ -13,8 +14,10 @@ export interface InsightResponse {
 
 export async function askHarpiaAi(
   question: string,
-  municipalities: Municipality[]
+  municipalities: Municipality[],
+  customSignals?: HarpiaSignal[]
 ): Promise<InsightResponse> {
+  const signalsToAnalyze = customSignals || HARPIA_SIGNALS;
   // Minimize payload by transmitting relevant analytical fields
   const simplifiedDataset = municipalities.map((m) => ({
     id: m.id,
@@ -91,6 +94,20 @@ export async function askHarpiaAi(
     body: JSON.stringify({
       question,
       dataset: simplifiedDataset,
+      signals: signalsToAnalyze.map((s) => ({
+        id: s.id,
+        municipioId: s.municipioId,
+        municipioNome: s.municipioNome,
+        uf: s.uf,
+        tipo: s.tipo,
+        titulo: s.titulo,
+        descricao: s.descricao,
+        data: s.data,
+        impacto: s.impacto,
+        scoreAntes: s.scoreAntes,
+        scoreDepois: s.scoreDepois,
+        acaoRecomendada: s.acaoRecomendada,
+      })),
     }),
   });
 

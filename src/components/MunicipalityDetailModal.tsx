@@ -31,6 +31,7 @@ import {
 import { Municipality } from '../types';
 import { ContextualHelp } from './ContextualHelp';
 import { getSignalsForMunicipio } from '../data/harpiaSignals';
+import { jsPDF } from 'jspdf';
 
 interface MunicipalityDetailModalProps {
   municipality: Municipality | null;
@@ -64,8 +65,228 @@ export const MunicipalityDetailModal: React.FC<MunicipalityDetailModalProps> = (
   };
 
   const handleExport = () => {
-    setExportNotice(true);
-    setTimeout(() => setExportNotice(false), 2500);
+    try {
+      const doc = new jsPDF();
+
+      // Header Banner
+      doc.setFillColor(5, 11, 30);
+      doc.rect(0, 0, 210, 36, 'F');
+
+      doc.setTextColor(0, 221, 242);
+      doc.setFontSize(15);
+      doc.setFont('helvetica', 'bold');
+      doc.text('HARPIA TECH · DOSSIÊ EXECUTIVO B2G', 14, 16);
+
+      doc.setTextColor(180, 195, 220);
+      doc.setFontSize(8.5);
+      doc.setFont('helvetica', 'normal');
+      doc.text('Inteligência Comercial & Radar de Oportunidades Municipais', 14, 23);
+      doc.text(
+        `Gerado em: ${new Date().toLocaleDateString('pt-BR')} · Ambiente Demonstrativo`,
+        14,
+        29
+      );
+
+      // Municipality Title
+      doc.setTextColor(15, 23, 42);
+      doc.setFontSize(17);
+      doc.setFont('helvetica', 'bold');
+      doc.text(`${municipality.nome} / ${municipality.uf}`, 14, 47);
+
+      const porteDesc =
+        municipality.populacao > 100000
+          ? 'Grande porte'
+          : municipality.populacao > 50000
+          ? 'Médio porte'
+          : 'Pequeno porte';
+
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(100, 116, 139);
+      doc.text(
+        `Região: ${municipality.regiao} | População: ${municipality.populacao.toLocaleString('pt-BR')} hab. | Porte: ${porteDesc}`,
+        14,
+        54
+      );
+
+      // Score Harpia Box
+      doc.setFillColor(241, 245, 249);
+      doc.setDrawColor(0, 221, 242);
+      doc.setLineWidth(0.5);
+      doc.roundedRect(14, 60, 182, 30, 2, 2, 'FD');
+
+      doc.setFontSize(11);
+      doc.setTextColor(2, 132, 199);
+      doc.setFont('helvetica', 'bold');
+      doc.text(
+        `SCORE HARPIA: ${score.total} / 100 PTS  (${municipality.prioridade.toUpperCase()})`,
+        18,
+        69
+      );
+
+      doc.setFontSize(8.5);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(51, 65, 85);
+      doc.text(
+        `• Fiscal: ${score.fiscal}/30 pts   • Educação: ${score.educacao}/25 pts   • Contratação: ${score.contratacao}/25 pts`,
+        18,
+        77
+      );
+      doc.text(
+        `• Acesso: ${score.acesso}/10 pts   • Governança: ${score.governanca}/10 pts   • Janela: ${municipality.janela}`,
+        18,
+        84
+      );
+
+      // 1. Commercial Direction
+      let y = 100;
+      doc.setFontSize(11);
+      doc.setTextColor(15, 23, 42);
+      doc.setFont('helvetica', 'bold');
+      doc.text('1. DIRECIONAMENTO COMERCIAL B2G', 14, y);
+      y += 6;
+
+      doc.setFontSize(8.5);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(2, 132, 199);
+      doc.text('Principal Sinal:', 14, y);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(51, 65, 85);
+      const splitSignal = doc.splitTextToSize(
+        municipality.principalSinal || 'Sinal mapeado em fontes públicas de referência',
+        140
+      );
+      doc.text(splitSignal, 45, y);
+      y += splitSignal.length * 4.5 + 2;
+
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(2, 132, 199);
+      doc.text('Próxima Ação:', 14, y);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(16, 120, 60);
+      const splitAction = doc.splitTextToSize(leituraHarpia.proximaAcao, 140);
+      doc.text(splitAction, 45, y);
+      y += splitAction.length * 4.5 + 2;
+
+      if (municipality.melhorMomento) {
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(2, 132, 199);
+        doc.text('Janela Ideal:', 14, y);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(51, 65, 85);
+        doc.text(municipality.melhorMomento, 45, y);
+        y += 6;
+      }
+
+      // 2. Financial & Educational
+      y += 2;
+      doc.setFontSize(11);
+      doc.setTextColor(15, 23, 42);
+      doc.setFont('helvetica', 'bold');
+      doc.text('2. INDICADORES FISCAIS E EDUCACIONAIS', 14, y);
+      y += 6;
+
+      doc.setFontSize(8.5);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(51, 65, 85);
+      doc.text(
+        `• RCL: ${fmtCurrency(financeiro.rcl)} | Arrecadação Própria: ${financeiro.arrecadacaoPropriaPct}%`,
+        14,
+        y
+      );
+      y += 4.5;
+      doc.text(
+        `• Orçamento em Educação: ${fmtCurrency(financeiro.orcamentoEducacao)} (${financeiro.orcamentoEducacaoPct}% da RCL)`,
+        14,
+        y
+      );
+      y += 4.5;
+      doc.text(
+        `• IDEB Iniciais: ${educacao.aprendizagem.idebIniciais} (Meta: ${educacao.aprendizagem.idebIniciaisMeta}) | Finais: ${educacao.aprendizagem.idebFinais} (Meta: ${educacao.aprendizagem.idebFinaisMeta})`,
+        14,
+        y
+      );
+      y += 4.5;
+      doc.text(
+        `• Rede: ${educacao.escala.matriculas.toLocaleString('pt-BR')} matrículas em ${educacao.escala.escolas} escolas municipais`,
+        14,
+        y
+      );
+      y += 6;
+
+      // 3. Procurement & Contacts
+      doc.setFontSize(11);
+      doc.setTextColor(15, 23, 42);
+      doc.setFont('helvetica', 'bold');
+      doc.text('3. CONTRATAÇÕES VIGENTES E CANAIS INSTITUCIONAIS', 14, y);
+      y += 6;
+
+      doc.setFontSize(8.5);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(51, 65, 85);
+      if (compras.historico && compras.historico.length > 0) {
+        const h = compras.historico[0];
+        doc.text(`• Contrato Relevante: ${h.objeto} (${h.status})`, 14, y);
+        y += 4.5;
+        doc.text(`  Valor: ${fmtCurrency(h.valor)} | Vigência: ${h.vigencia}`, 14, y);
+        y += 4.5;
+      }
+      const secEdu = Array.isArray(acesso)
+        ? acesso.find((a) => a.categoria === 'Educação') || acesso[0]
+        : null;
+
+      if (secEdu) {
+        doc.text(
+          `• Contato Institucional: ${secEdu.orgao} (${secEdu.cargo})`,
+          14,
+          y
+        );
+        y += 4.5;
+        doc.text(
+          `  Email: ${secEdu.emailInstitucional} | Tel: ${secEdu.telefoneInstitucional}`,
+          14,
+          y
+        );
+        y += 4.5;
+      }
+
+      // 4. Cautions
+      if (leituraHarpia.cautelas && leituraHarpia.cautelas.length > 0) {
+        y += 2;
+        doc.setFontSize(10);
+        doc.setTextColor(185, 28, 28);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Cautelas e Validações Prévias:', 14, y);
+        y += 5;
+        doc.setFontSize(8);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(120, 53, 15);
+        leituraHarpia.cautelas.forEach((c) => {
+          const splitC = doc.splitTextToSize(`- ${c}`, 175);
+          doc.text(splitC, 14, y);
+          y += splitC.length * 4;
+        });
+      }
+
+      // Footer
+      doc.setDrawColor(203, 213, 225);
+      doc.line(14, 276, 196, 276);
+      doc.setFontSize(7);
+      doc.setTextColor(148, 163, 184);
+      doc.text(
+        'HARPIA TECH · Dados demonstrativos baseados em fontes de referência públicas. O Score Harpia não garante contratação.',
+        14,
+        282
+      );
+
+      const filename = `dossie-${municipality.nome.toLowerCase().replace(/[^a-z0-9]/g, '-')}-harpia.pdf`;
+      doc.save(filename);
+
+      setExportNotice(true);
+      setTimeout(() => setExportNotice(false), 4000);
+    } catch (err) {
+      console.error('Erro ao gerar dossiê PDF:', err);
+    }
   };
 
   // Dimension explanations based on weighted points
@@ -214,9 +435,14 @@ export const MunicipalityDetailModal: React.FC<MunicipalityDetailModalProps> = (
           </div>
 
           {exportNotice && (
-            <div className="p-2.5 rounded-lg bg-[#00DDF2]/10 border border-[#00DDF2]/30 text-xs text-[#00DDF2] flex items-center justify-between animate-in fade-in">
-              <span>Dossiê B2G gerado com sucesso para este município demonstrativo.</span>
-              <span className="text-[10px] font-mono-numbers">PDF · 3.8 MB</span>
+            <div className="p-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-xs text-emerald-400 flex items-center justify-between animate-in fade-in">
+              <span className="flex items-center gap-1.5 font-medium">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                Dossiê executivo B2G baixado: dossie-{municipality.nome.toLowerCase().replace(/[^a-z0-9]/g, '-')}-harpia.pdf
+              </span>
+              <span className="text-[10px] font-mono-numbers px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300">
+                Download concluído
+              </span>
             </div>
           )}
 

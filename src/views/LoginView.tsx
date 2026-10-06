@@ -76,7 +76,7 @@ export const LoginView: React.FC<LoginViewProps> = ({
                   Decisões comerciais com dados públicos e contexto.
                 </h2>
                 <p className="text-xs text-slate-400 leading-relaxed">
-                  Acesse o painel analítico para acompanhar 5.572 municípios brasileiros e identificar janelas imediatas de contratação.
+                  Acesse o painel analítico para priorizar oportunidades municipais e identificar janelas imediatas de contratação B2G.
                 </p>
               </div>
             </div>

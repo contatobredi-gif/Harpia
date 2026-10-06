@@ -28,14 +28,14 @@ interface InsightAnswer extends InsightResponse {
 }
 
 const PRESET_QUESTIONS = [
-  'Quais municípios possuem janela nos próximos 90 dias?',
+  'Quais os novos Sinais Harpia identificados e quais ações recomendadas?',
+  'Quais municípios possuem janela de oportunidade nos próximos 90 dias?',
   'Onde devo agir esta semana e qual a próxima ação recomendada?',
   'Por que o Município Alfa é a principal prioridade comercial hoje?',
   'Compare Município Alfa e Município Beta quanto à janela e sinais.',
-  'Qual município possui maior capacidade fiscal e dotação na LOA?',
+  'Quais municípios tiveram movimentação recente de score?',
   'Quais municípios combinam alta necessidade educacional e orçamento aprovado?',
   'Quais oportunidades possuem mais cautelas e exigem validação prévia?',
-  'Quais municípios estão em monitoramento aguardando aditivo ou novo edital?',
 ];
 
 function getPriorityColor(priority: string): string {
